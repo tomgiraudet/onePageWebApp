@@ -22,6 +22,7 @@ body{
     width: 300px;
     height: 100%;
     display: inline-block;
+    padding-right: 15px;
 }
 
 #connect-block{
@@ -45,4 +46,17 @@ body{
 #signup{
     width: 336px;
     display: block;
+    padding-top: 15px;
+}
+
+#title-signup{
+    font-size: large;
+    font-style: italic;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#sex-form{
+    padding-top: 5px;
+    padding-bottom: 5px;
 }

@@ -15,59 +15,59 @@
         <img id="brand-logo" src="../public/img/twidder-logo.jpg"/>
     </div>
     <div id="connect-block">
-    <div id="login">
-        <!--<form role="form">
-            <div class="form-group">
-                <label>Email as username:</label>
-                <input type="email" class="form-control" id="user-username" placeholder="Username">
-            </div>
-            <div class="form-group">
-                <label>Password:</label>
-                <input type="password" class="form-control" id="user-password" placeholder="Password">
-            </div>
-            <button id="btn-login" type="submit" class="btn btn-default">Connect</button>
-        </form>-->
-        <form role="form">
-            <div id="login-form" class="form-inline">
-                <input type="email" class="form-control" id="user-username" placeholder="Email as username">
-                <input type="password" class="form-control" id="user-password" placeholder="Password">
-            </div>
-            <button id="btn-login" type="submit" class="btn btn-default">Connect</button>
-        </form>
-    </div>
-
-    <div id="signup">
-        <form role="form">
-            <div class="form-group">
-                <label>Email as username:</label>
-                <input type="email" class="form-control" id="new-username" placeholder="Username">
-            </div>
-            <div class="form-group">
-                <label>Password:</label>
-                <input type="password" class="form-control" id="new-password" placeholder="Password">
-            </div>
-            <div class="form-group">
-                <label>Repeat your password:</label>
-                <input type="password" class="form-control" id="new-passwordb" placeholder="Password again">
-            </div>
-            <div class="form-group">
-                <label>Who are you ?</label>
-                <input type="text" class="form-control" id="new-firstname" placeholder="First name">
-                <input type="text" class="form-control" id="new-familyname" placeholder="Family name">
-                <div class="form-inline">
-                    <label>Sex</label>
-                    <select class="form-control" id="new-sex">
-                        <option disabled selected hidden>Sex</option>
-                        <option>Woman</option>
-                        <option>Man</option>
-                    </select>
+        <div id="login">
+            <!--<form role="form">
+                <div class="form-group">
+                    <label>Email as username:</label>
+                    <input type="email" class="form-control" id="user-username" placeholder="Username">
                 </div>
-                <input type="text" class="form-control" id="city" placeholder="City">
-                <input type="text" class="form-control" id="country" placeholder="Country">
-            </div>
-            <button type="submit" class="btn btn-default">Create my account</button>
-        </form>
-    </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" class="form-control" id="user-password" placeholder="Password">
+                </div>
+                <button id="btn-login" type="submit" class="btn btn-default">Connect</button>
+            </form>-->
+            <form role="form">
+                <div id="login-form" class="form-inline">
+                    <input type="email" class="form-control" id="user-username" placeholder="Email as username">
+                    <input type="password" class="form-control" id="user-password" placeholder="Password">
+                </div>
+                <button id="btn-login" type="submit" class="btn btn-default">Connect</button>
+            </form>
+        </div>
+
+        <div id="signup">
+            <div id="title-signup"> Sign up now! </div>
+            <form role="form">
+                <div class="form-group">
+                    <label>Email as username:</label>
+                    <input type="email" class="form-control" id="new-username" placeholder="Username">
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" class="form-control" id="new-password" placeholder="Password">
+                    <input type="password" class="form-control" id="new-passwordb" placeholder="Confirm password">
+                </div>
+
+                <div class="form-group">
+                    <label>Who are you ?</label>
+                    <input type="text" class="form-control" id="new-firstname" placeholder="First name">
+                    <input type="text" class="form-control" id="new-familyname" placeholder="Family name">
+                    <div class="form-inline" id="sex-form">
+                        <label>Sex</label>
+                        <label class="radio-inline">
+                            <input type="radio" id="female-radio-btn" value="female"> Female
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" id="male-radio-btn" value="male"> Male
+                        </label>
+                    </div>
+                    <input type="text" class="form-control" id="city" placeholder="City">
+                    <input type="text" class="form-control" id="country" placeholder="Country">
+                </div>
+                <button type="submit" class="btn btn-default">Create my account</button>
+            </form>
+        </div>
     </div>
 
 </div>

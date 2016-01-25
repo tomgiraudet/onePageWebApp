@@ -1,4 +1,4 @@
-/*var imlocation = "../public/img/";
+var imlocation = "../public/img/";
 var currentdate = 0;
 var image_number = 0;
 
@@ -16,14 +16,21 @@ image[2] = 'logo3.jpg';
 var rand = 60/image.length;
 
 function randomimage() {
-    currentdate = new Date();
-    image_number = currentdate.getSeconds();
-    image_number = Math.floor(image_number/rand);
-    return(image[image_number])
+    var rand = Math.floor((Math.random()*3) +1);
+    console.log(rand);
+    return(image[rand-1]);
 }
 
-document.onload(function(){
-    document.getElementById('ad').write("<img src='../public/img/' + randomimage()>");
-});*/
+
+window.onload = function() {
+   console.log(document);
+    console.log(document.getElementById("ad"));
+    var img = document.createElement("IMG");
+    console.log(img);
+    img.setAttribute("id", "brand-logo");
+    img.setAttribute("src", "../public/img/" + randomimage());
+    document.getElementById('ad').appendChild(img);
+  }
+
 
 

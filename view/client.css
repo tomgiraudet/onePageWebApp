@@ -3,9 +3,6 @@ body{
     background-attachment: fixed;
 }
 
-#brand-logo{
-    width: 100%;
-}
 
 #header-logo{
     height: 40px;
@@ -48,6 +45,12 @@ body{
     vertical-align: top;
     margin-right: 15px;
 }
+
+#brand-logo{
+    width: 100%;
+    display: block;
+}
+
 
 
 #connect-block{

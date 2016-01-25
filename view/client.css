@@ -4,25 +4,7 @@ body{
 }
 
 #brand-logo{
-    height: 100%;
     width: 100%;
-}
-
-#welcome-page{
-    width: 700px;
-    height: 500px;
-    background-color: #ebebeb;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 100px;
-    padding: 15px;
-}
-
-#ad{
-    width: 300px;
-    height: 100%;
-    display: inline-block;
-    padding-right: 15px;
 }
 
 #header-logo{
@@ -41,7 +23,35 @@ body{
   background-color: #F44336;
 }
 
+.welcome-block{
+    /*background-color: #dcdcdc;*/
+    /*border: 2px solid #aeaeae;*/
+    border-radius: 5px;
+    background: rgba(7, 7, 7, 0.68);
+    padding: 10px;
+   /* box-shadow: 4px 4px 4px #888888;*/
+}
+
+
+#welcome-page{
+    width: 800px;
+    height: 495px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 100px;
+}
+
+#ad{
+    width: 300px;
+    height: 100%;
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 15px;
+}
+
+
 #connect-block{
+    height:100%;
     display: inline-block;
 }
 
@@ -55,21 +65,31 @@ body{
 }
 
 #btn-login{
+    /*
     float: right;
+    */
 }
 
 /* SIGN UP PART STYLE */
 #signup{
-    width: 336px;
     display: block;
-    padding-top: 15px;
+    margin-top: 15px;
 }
 
-#title-signup{
-    font-size: large;
-    font-style: italic;
+.title-sign{
     margin-top: 5px;
     margin-bottom: 5px;
+    font-size: large;
+    color: white;
+}
+
+.forms-label-sign{
+    color: white;
+}
+
+.form-inline{
+    margin-top: 3px;
+    margin-bottom: 3px;
 }
 
 #sex-form{

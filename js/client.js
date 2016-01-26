@@ -43,7 +43,9 @@ window.onload = function() {
 
     });
 
+
     btnsignup = document.getElementById("btn-signup");
+
     btnsignup.setAttribute("onclick", "return false;");
     btnsignup.addEventListener("click", function() {
         var username = document.getElementById("new-username").value;
@@ -80,7 +82,7 @@ window.onload = function() {
     img.setAttribute("id", "brand-logo");
     img.setAttribute("src", "../public/img/" + randomimage());
     document.getElementById('ad').appendChild(img);
-}
+};
 
 
 

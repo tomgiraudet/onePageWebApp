@@ -23,14 +23,14 @@ function randomimage() {
 
 
 window.onload = function() {
-   console.log(document);
-    console.log(document.getElementById("ad"));
+
+
+    // Display random image
     var img = document.createElement("IMG");
-    console.log(img);
     img.setAttribute("id", "brand-logo");
     img.setAttribute("src", "../public/img/" + randomimage());
     document.getElementById('ad').appendChild(img);
-  }
+}
 
 
 

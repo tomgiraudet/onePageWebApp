@@ -33,10 +33,21 @@ window.onload = function() {
         var password = document.getElementById("user-password").value;
         if((/^[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]{2,6}$/.test(username)) && (password !== null)){
             // Ok, sign in
+            
+            document.getElementById("in-username-form").setAttribute("class", "input-group has-success");
+            document.getElementById("in-password-form").setAttribute("class", "input-group has-success");
+            document.getElementById("error-area").removeChild(document.getElementById("login-error"));
         }
         else
         {
-            username.setAttribute("class", "error");
+            document.getElementById("in-username-form").setAttribute("class", "input-group has-error");
+            document.getElementById("in-password-form").setAttribute("class", "input-group has-error");
+
+            var errorlabel = document.createElement("label");
+            errorlabel.setAttribute("class", "label label-danger");
+            errorlabel.setAttribute("id", "login-error");
+            errorlabel.innerText = "Wrong email or password";
+            document.getElementById("error-area").appendChild(errorlabel);
         }
 
         return false;

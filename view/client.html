@@ -27,19 +27,20 @@
             <div class="title-sign"> Sign in ...</div>
             <form role="form">
                 <div id="login-form" class="form-inline">
-                    <div class="input-group">
+                    <div class="input-group" id="in-username-form">
                       <span class="input-group-addon">
                           <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
                       </span>
                         <input type="email" class="form-control" id="user-username" placeholder="Username" aria-describedby="basic-addon1">
                     </div>
-                    <div class="input-group">
+                    <div class="input-group" id="in-password-form">
                       <span class="input-group-addon">
                           <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>
                       </span>
                         <input type="password" class="form-control" id="user-password" placeholder="Password" aria-describedby="basic-addon1">
                     </div>
                 </div>
+                <div><h4 id="error-area"></h4></div>
                 <div class="text-right">
                     <button id="btn-login" type="submit" class="btn btn-default">Connect</button>
                 </div>
@@ -50,7 +51,9 @@
             <div class="title-sign">... or sign up now ! </div>
             <form role="form">
                 <div class="form-group">
+                <div class="form-group has-feedback">
                     <input type="email" class="form-control" id="new-username" placeholder="Username">
+                    </div>
                     <div class="form-inline">
                         <input type="password" class="form-control" id="new-password" placeholder="Password" aria-describedby="basic-addon1">
                         <input type="password" class="form-control" id="new-passwordb" placeholder="Confirm password" aria-describedby="basic-addon1">

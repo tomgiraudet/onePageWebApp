@@ -1,7 +1,3 @@
-var imlocation = "../public/img/";
-var currentdate = 0;
-var image_number = 0;
-
 function ImageArray (n) {
     this.length = n;
     for (var i =1; i <= n; i++) {
@@ -13,18 +9,11 @@ image = new ImageArray(3);
 image[0] = 'logo1.jpg';
 image[1] = 'logo2.jpg';
 image[2] = 'logo3.jpg';
-var rand = 60/image.length;
 
 function randomimage() {
     var rand = Math.floor((Math.random()*3) +1);
-    console.log(rand);
     return(image[rand-1]);
 }
-
-
-
-
-
 
 window.onload = function() {
     if (localStorage.getItem("token") === null) {
@@ -38,8 +27,19 @@ window.onload = function() {
 
     btnLogin = document.getElementById("btn-login");
 
-    console.log(document.getElementById("user-username"));
+    btnLogin.setAttribute("onclick", "return false;");  // make the page not refresh
     btnLogin.addEventListener("click", function() {
+        var username = document.getElementById("user-username").value;
+        var password = document.getElementById("user-password").value;
+        if((/^[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]{2,6}$/.test(username)) && (password !== null)){
+            // Ok, sign in
+        }
+        else
+        {
+            username.setAttribute("class", "error");
+        }
+
+        return false;
 
     });
 

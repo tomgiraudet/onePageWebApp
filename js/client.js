@@ -44,6 +44,7 @@ window.onload = function() {
     });
 
     btnsignup = document.getElementById("btn-signup");
+    btnsignup.setAttribute("onclick", "return false;");
     btnsignup.addEventListener("click", function() {
         var username = document.getElementById("new-username").value;
         var password = document.getElementById("new-password").value;
@@ -54,7 +55,7 @@ window.onload = function() {
         var country = document.getElementById("country").value;
 
         testUsername = username.length>0;
-        testPassword = (password.localCompare(passwordb) == 0) && password.length>0;
+        testPassword = (password.localeCompare(passwordb) == 0) && password.length>0;
         testFirstName = firstname.length>0;
         testFamilyName = familyname.length>0;
         testSex = true; // To do : test sexe
@@ -62,11 +63,12 @@ window.onload = function() {
         testCountry = country.length>0;
 
         valide = testUsername && testPassword && testFirstName && testSex && testFamilyName && testCity && testCountry
+        console.log(valide);
 
         if(valide){
-            // sign-up ready to be stored
+            alert("Sign up succesful ! Good job dickhead !")
         }else{
-            // false
+            alert("Fail somewhere, over the rainbow ...")
         }
 
         return false;

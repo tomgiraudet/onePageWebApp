@@ -22,7 +22,26 @@ function randomimage() {
 }
 
 
+
+
+
+
 window.onload = function() {
+    if (localStorage.getItem("token") === null) {
+        var welcomeDiv = document.getElementById("welcome-display");
+        welcomeDiv.innerHTML = document.getElementById('welcome-view').innerHTML ;
+    }else{
+        var profileDiv = document.getElementById("profile-display");
+        profileDiv.innerHTML = document.getElementById('profile-view').innerHTML ;
+    }
+
+
+    btnLogin = document.getElementById("btn-login");
+
+    console.log(document.getElementById("user-username"));
+    btnLogin.addEventListener("click", function() {
+
+    });
 
 
     // Display random image

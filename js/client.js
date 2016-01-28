@@ -82,7 +82,25 @@ window.onload = function() {
         if(valide){
             alert("Sign up succesful ! Good job dickhead !")
         }else{
-            alert("Fail somewhere, over the rainbow ...")
+            if(!testUsername){
+                //document.getElementById()
+            }
+            if(!testFirstName){
+                document.getElementById("new-firstname").setAttribute("class", "has-error");
+            }
+            if(!testFamilyName){
+
+
+            }
+            if(!testSex){
+
+            }
+            if(!testCity){
+
+            }
+            if(!testCountry){
+
+            }
         }
 
         return false;

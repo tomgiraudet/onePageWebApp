@@ -51,33 +51,45 @@
             <div class="title-sign">... or sign up now ! </div>
             <form role="form">
                 <div class="form-group">
-                <div class="form-group has-feedback">
-                    <input type="email" class="form-control" id="new-username" placeholder="Username">
+                    <div class="form-group has-feedback">
+                        <div class="input-form" id="up-username-form">
+                            <input type="email" class="form-control" id="new-username" placeholder="Username">
+                        </div>
                     </div>
                     <div class="form-inline">
-                        <input type="password" class="form-control" id="new-password" placeholder="Password" aria-describedby="basic-addon1">
-                        <input type="password" class="form-control" id="new-passwordb" placeholder="Confirm password" aria-describedby="basic-addon1">
+                        <div class="input-form" id="up-password-form">
+                            <input type="password" class="form-control" id="new-password" placeholder="Password" aria-describedby="basic-addon1">
+                            <input type="password" class="form-control" id="new-passwordb" placeholder="Confirm password" aria-describedby="basic-addon1">
+                        </div>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="forms-label-sign">Who are you ?</label>
                     <div class="form-inline">
-                        <input type="text" class="form-control" id="new-firstname" placeholder="First name">
-                        <input type="text" class="form-control" id="new-familyname" placeholder="Family name">
+                        <div class="input-form" id="up-name-form">
+                            <input type="text" class="form-control" id="new-firstname" placeholder="First name">
+                            <input type="text" class="form-control" id="new-familyname" placeholder="Family name">
+                        </div>
                     </div>
                     <div class="form-inline" id="sex-form">
-                        <label id="sex-label" class="forms-label-sign"> Sex: </label>
-                        <label class="radio-inline forms-label-sign">
-                            <input type="radio" id="female-radio-btn" value="female"> Female
+                        <div class="input-group" id="in-username-form">
+                            <label id="sex-label" class="forms-label-sign"> Sex: </label>
+                        </div>
+
+                        <label class="radio-inline forms-label-sign active">
+                            <input type="radio" id="female-radio-btn" value="female" checked=""> Female
                         </label>
                         <label class="radio-inline forms-label-sign">
                             <input type="radio" id="male-radio-btn" value="male"> Male
                         </label>
+
                     </div>
                     <div class="form-inline">
-                        <input type="text" class="form-control" id="city" placeholder="City">
-                        <input type="text" class="form-control" id="country" placeholder="Country">
+                        <div class="input-form" id="up-address-form">
+                            <input type="text" class="form-control" id="city" placeholder="City">
+                            <input type="text" class="form-control" id="country" placeholder="Country">
+                        </div>
                     </div>
                 </div>
                 <div class="text-right">

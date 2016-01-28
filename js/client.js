@@ -19,7 +19,7 @@ function randomimage() {
 window.onload = function() {
     localStorage.setItem("token", "test");
     if (localStorage.getItem("token") === null) {
-    //if (localStorage.getItem("loggedinusers") === null) {
+        //if (localStorage.getItem("loggedinusers") === null) {
         var welcomeDiv = document.getElementById("welcome-display");
         welcomeDiv.innerHTML = document.getElementById('welcome-view').innerHTML ;
         btnLogin = document.getElementById("btn-login");
@@ -100,17 +100,17 @@ window.onload = function() {
             return false;
         });
 
+        // Display random image
+        var img = document.createElement("IMG");
+        img.setAttribute("id", "brand-logo");
+        img.setAttribute("src", "../public/img/" + randomimage());
+        document.getElementById('ad').appendChild(img);
+
     }else{
         var profileDiv = document.getElementById("profile-display");
         profileDiv.innerHTML = document.getElementById('profile-view').innerHTML ;
     }
 
-
-    // Display random image
-    var img = document.createElement("IMG");
-    img.setAttribute("id", "brand-logo");
-    img.setAttribute("src", "../public/img/" + randomimage());
-    document.getElementById('ad').appendChild(img);
 };
 
 function displayErrorSignUp(msg){

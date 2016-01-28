@@ -82,24 +82,21 @@ window.onload = function() {
         if(valide){
             alert("Sign up succesful ! Good job dickhead !")
         }else{
+
             if(!testUsername){
-                //document.getElementById()
+                document.getElementById("up-username-form").setAttribute("class", "input-form has-error");
             }
             if(!testFirstName){
-                document.getElementById("new-firstname").setAttribute("class", "has-error");
+                document.getElementById("up-password-form").setAttribute("class", "input-form has-error");
             }
-            if(!testFamilyName){
-
-
+            if(!testPassword){
+                document.getElementById("up-password-form").setAttribute("class", "input-form has-error");
             }
-            if(!testSex){
-
+            if(!testFamilyName || !testFirstName){
+                document.getElementById("up-name-form").setAttribute("class", "input-form has-error");
             }
-            if(!testCity){
-
-            }
-            if(!testCountry){
-
+            if(!testCity || !testCountry){
+                document.getElementById("up-address-form").setAttribute("class", "input-form has-error");
             }
         }
 

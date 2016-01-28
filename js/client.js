@@ -109,6 +109,27 @@ window.onload = function() {
     }else{
         var profileDiv = document.getElementById("profile-display");
         profileDiv.innerHTML = document.getElementById('profile-view').innerHTML ;
+
+        var homebtn = document.getElementById("home-btn");
+        homebtn.addEventListener("click", function(){
+            document.getElementById('home').style.display = "block";
+            document.getElementById('account').style.display = "none";
+            document.getElementById('browse').style.display = "none";
+        });
+
+        var bowserbtn = document.getElementById("browse-btn");
+        bowserbtn.addEventListener("click", function(){
+            document.getElementById('home').style.display = "none";
+            document.getElementById('account').style.display = "none";
+            document.getElementById('browse').style.display = "block";
+        });
+
+        var accountbtn = document.getElementById("account-btn");
+        accountbtn.addEventListener("click", function(){
+            document.getElementById('home').style.display = "none";
+            document.getElementById('account').style.display = "block";
+            document.getElementById('browse').style.display = "none";
+        });
     }
 
 };

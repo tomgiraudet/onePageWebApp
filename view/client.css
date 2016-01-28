@@ -22,7 +22,7 @@ body{
 
 .navbar-menu{
     float: right;
-    padding-top: 10px;
+    padding-top: 11px;
 }
 
 .navbar-item{
@@ -141,5 +141,36 @@ body{
 
 #up-sex-form{
     float: left;
+}
+
+.window{
+    width: 800px;
+    height: 495px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 100px;
+}
+
+#page{
+    margin-top: 100px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#side-panel{
+
+}
+
+#general-panel{
+
+}
+
+/* PROFILE VIEW */
+#browse{
+    display: none;
+}
+
+#account{
+    display: none;
 }
 

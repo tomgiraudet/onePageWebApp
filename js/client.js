@@ -93,14 +93,15 @@ window.onload = function() {
                     document.getElementById("up-address-form").setAttribute("class", "input-form has-error");
                 }
             }
+
             return false;
         });
 
-        
     }else{
         var profileDiv = document.getElementById("profile-display");
         profileDiv.innerHTML = document.getElementById('profile-view').innerHTML ;
     }
+
 
 
 

@@ -17,7 +17,9 @@ function randomimage() {
 
 
 window.onload = function() {
-    if (localStorage.getItem("loggedinusers") === null) {
+    localStorage.setItem("token", "test");
+    if (localStorage.getItem("token") === null) {
+    //if (localStorage.getItem("loggedinusers") === null) {
         var welcomeDiv = document.getElementById("welcome-display");
         welcomeDiv.innerHTML = document.getElementById('welcome-view').innerHTML ;
         btnLogin = document.getElementById("btn-login");

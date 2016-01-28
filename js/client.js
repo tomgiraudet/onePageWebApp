@@ -69,6 +69,7 @@ window.onload = function() {
             var familyname = document.getElementById("new-familyname").value;
             var city = document.getElementById("city").value;
             var country = document.getElementById("country").value;
+            var sex = document.getElementById("female-radio-btn").checked ? "female" : "male";
 
             testUsername = username.length>0;
             // J'ai rajouté length > 6 parce qu'il faut une longueur minimum du mot de passe
@@ -79,11 +80,15 @@ window.onload = function() {
             testCity = city.length>0;
             testCountry = country.length>0;
 
-            valide = testUsername && testPassword && testFirstName && testSex && testFamilyName && testCity && testCountry
-            console.log(valide);
+            valide = testUsername && testPassword && testFirstName && testSex && testFamilyName && testCity && testCountry;
 
             if(valide){
-                alert("Sign up succesful ! Good job dickhead !")
+                var jsonFile = { email : username, password : password, firstname : firstname, familyname : familyname,
+             gender : sex, city : city, country : country};
+                var msg = serverstub.signUp(jsonFile);
+                console.log(msg.success);
+                console.log(msg.message);
+
             }else{
                 document.getElementById("in-username-form").setAttribute("class", "input-group");
                 document.getElementById("in-password-form").setAttribute("class", "input-group");

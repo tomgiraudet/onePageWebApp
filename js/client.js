@@ -30,18 +30,27 @@ window.onload = function() {
 
                 document.getElementById("in-username-form").setAttribute("class", "input-group has-success");
                 document.getElementById("in-password-form").setAttribute("class", "input-group has-success");
-                document.getElementById("error-area").removeChild(document.getElementById("login-error"));
+                document.getElementById("error-area-signin").removeChild(document.getElementById("login-error"));
             }
             else
             {
+
+
                 document.getElementById("in-username-form").setAttribute("class", "input-group has-error");
                 document.getElementById("in-password-form").setAttribute("class", "input-group has-error");
-
-                var errorlabel = document.createElement("label");
-                errorlabel.setAttribute("class", "label label-danger");
-                errorlabel.setAttribute("id", "login-error");
-                errorlabel.innerText = "Wrong email or password";
-                document.getElementById("error-area").appendChild(errorlabel);
+                if(document.getElementById("login-error") == null) {
+                    var errorlabel = document.createElement("label");
+                    errorlabel.setAttribute("class", "label label-danger");
+                    errorlabel.setAttribute("id", "login-error");
+                    errorlabel.innerText = "Wrong email or password";
+                    document.getElementById("error-area-signin").appendChild(errorlabel);
+                }
+                document.getElementById("error-area-signup").removeChild(document.getElementById("signup-error"));
+                document.getElementById("up-username-form").setAttribute("class", "input-form");
+                document.getElementById("up-password-form").setAttribute("class", "input-form");
+                document.getElementById("up-password-form").setAttribute("class", "input-form");
+                document.getElementById("up-name-form").setAttribute("class", "input-form");
+                document.getElementById("up-address-form").setAttribute("class", "input-form");
             }
 
             return false;
@@ -76,21 +85,41 @@ window.onload = function() {
             if(valide){
                 alert("Sign up succesful ! Good job dickhead !")
             }else{
+                document.getElementById("in-username-form").setAttribute("class", "input-group");
+                document.getElementById("in-password-form").setAttribute("class", "input-group");
+                document.getElementById("error-area-signin").removeChild(document.getElementById("login-error"));
+                if(document.getElementById("signup-error") == null){
+                    var errorlabel = document.createElement("label");
+                    errorlabel.setAttribute("class", "label label-danger");
+                    errorlabel.setAttribute("id", "signup-error");
+                    errorlabel.innerText = "Please check your information";
+                }
+                document.getElementById("error-area-signup").appendChild(errorlabel);
 
                 if(!testUsername){
                     document.getElementById("up-username-form").setAttribute("class", "input-form has-error");
+                }else{
+                    document.getElementById("up-username-form").setAttribute("class", "input-form");
                 }
                 if(!testFirstName){
                     document.getElementById("up-password-form").setAttribute("class", "input-form has-error");
+                }else{
+                    document.getElementById("up-password-form").setAttribute("class", "input-form");
                 }
                 if(!testPassword){
                     document.getElementById("up-password-form").setAttribute("class", "input-form has-error");
+                }else{
+                    document.getElementById("up-password-form").setAttribute("class", "input-form");
                 }
                 if(!testFamilyName || !testFirstName){
                     document.getElementById("up-name-form").setAttribute("class", "input-form has-error");
+                }else{
+                    document.getElementById("up-name-form").setAttribute("class", "input-form");
                 }
                 if(!testCity || !testCountry){
                     document.getElementById("up-address-form").setAttribute("class", "input-form has-error");
+                }else{
+                    document.getElementById("up-address-form").setAttribute("class", "input-form");
                 }
             }
             return false;

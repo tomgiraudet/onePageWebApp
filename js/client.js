@@ -69,7 +69,7 @@ window.onload = function() {
 
             if(valide){
                 var jsonFile = { email : username, password : password, firstname : firstname, familyname : familyname,
-                    gender : sex, city : city, country : country};
+             gender : sex, city : city, country : country};
                 var connection = serverstub.signUp(jsonFile);
 
                 if(connection.success){

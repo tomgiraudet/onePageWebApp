@@ -15,6 +15,12 @@ function randomimage() {
     return(image[rand-1]);
 }
 
+
+function displayErrorSignup(msg){
+
+}
+
+
 window.onload = function() {
     if (localStorage.getItem("token") === null) {
         var welcomeDiv = document.getElementById("welcome-display");
@@ -84,12 +90,6 @@ window.onload = function() {
             valide = testUsername && testPassword && testFirstName && testFamilyName && testCity && testCountry;
 
             if(valide){
-                var jsonFile = { email : username, password : password, firstname : firstname, familyname : familyname,
-             gender : sex, city : city, country : country};
-                var msg = serverstub.signUp(jsonFile);
-                console.log(msg.success);
-                console.log(msg.message);
-
                 if(document.getElementById("signup-error") != null) {
                     document.getElementById("error-area-signup").removeChild(document.getElementById("signup-error"));
                     document.getElementById("up-username-form").setAttribute("class", "input-form");
@@ -97,6 +97,21 @@ window.onload = function() {
                     document.getElementById("up-password-form").setAttribute("class", "input-form");
                     document.getElementById("up-name-form").setAttribute("class", "input-form");
                     document.getElementById("up-address-form").setAttribute("class", "input-form");
+                    var jsonFile = { email : username, password : password, firstname : firstname, familyname : familyname,
+                        gender : sex, city : city, country : country};
+                    var connection = serverstub.signUp(jsonFile);
+
+                    if(connection.success){
+                        // Ok, redirection vers profile page
+                    }else{
+                        if (document.getElementById("signup-connection-error") == null){
+                            var errorconnectionlabel = document.createElement("label");
+                            errorconnectionlabel.setAttribute("class", "label label-danger");
+                            errorconnectionlabel.setAttribute("id", "signup-connection-error");
+                            errorconnectionlabel.innerText = connection.message;
+                            document.getElementById("error-area-signup").appendChild(errorconnectionlabel);
+                        }
+                    }
                 }
 
             }else{
@@ -148,9 +163,6 @@ window.onload = function() {
         var profileDiv = document.getElementById("profile-display");
         profileDiv.innerHTML = document.getElementById('profile-view').innerHTML ;
     }
-
-
-
 
 
 

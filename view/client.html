@@ -13,15 +13,14 @@
 <body>
 
 
-<nav id="header" class="shadow-top">
-    <img id="header-logo" src="../public/img/header.png"/>
-</nav>
-
 <div id="welcome-display"></div>
 
 
 <!--<script id="welcome-view" type=”text/view”>-->
 <script id="welcome-view" type="text/html">
+    <nav class="header" class="shadow-top">
+        <img class="header-logo" src="../public/img/header.png"/>
+    </nav>
 
     <div id="welcome-page">
         <div id="ad" class="welcome-block shadow">
@@ -108,11 +107,15 @@
 
 
 <div id="profile-display"></div>
-<script id="profile-view"  type=”text/html”>
-    <div id="profile-page">
+<!--<script id="profile-view"  type=”text/html”>-->
+<div id="profile-page" >
+    <nav id="profile-navbar" class="shadow-top header">
+        <img class="header-logo" src="../public/img/header.png"/>
 
-    </div>
-</script>
+    </nav>
+
+</div>
+<!--</script>-->
 
 </body>
 </html>

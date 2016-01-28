@@ -25,35 +25,19 @@ window.onload = function() {
         btnLogin.addEventListener("click", function() {
             var username = document.getElementById("user-username").value;
             var password = document.getElementById("user-password").value;
+            var res = serverstub.signIn(username,password);
             if((/^[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]{2,6}$/.test(username)) && (password.length > 5)){
                 // Ok, sign in
-
-                document.getElementById("in-username-form").setAttribute("class", "input-group has-success");
-                document.getElementById("in-password-form").setAttribute("class", "input-group has-success");
-                document.getElementById("error-area-signin").removeChild(document.getElementById("login-error"));
-            }
-            else
-            {
-
-
-                document.getElementById("in-username-form").setAttribute("class", "input-group has-error");
-                document.getElementById("in-password-form").setAttribute("class", "input-group has-error");
-                if(document.getElementById("login-error") == null) {
-                    var errorlabel = document.createElement("label");
-                    errorlabel.setAttribute("class", "label label-danger");
-                    errorlabel.setAttribute("id", "login-error");
-                    errorlabel.innerText = "Wrong email or password";
-                    document.getElementById("error-area-signin").appendChild(errorlabel);
+                if(res.success){
+                    document.getElementById("in-username-form").setAttribute("class", "input-group has-success");
+                    document.getElementById("in-password-form").setAttribute("class", "input-group has-success");
+                    document.getElementById("error-area-signin").removeChild(document.getElementById("login-error"));
+                }else {
+                    // error
+                    displayErrorSignIn(res);
                 }
-                if(document.getElementById("signup-error") != null){
-                    // Sign-up has errors and need to be cleaned
-                    document.getElementById("error-area-signup").removeChild(document.getElementById("signup-error"));
-                    document.getElementById("up-username-form").setAttribute("class", "input-form");
-                    document.getElementById("up-password-form").setAttribute("class", "input-form");
-                    document.getElementById("up-password-form").setAttribute("class", "input-form");
-                    document.getElementById("up-name-form").setAttribute("class", "input-form");
-                    document.getElementById("up-address-form").setAttribute("class", "input-form");
-                }
+            }else {
+                displayErrorSignIn(res);
             }
 
             return false;
@@ -72,6 +56,7 @@ window.onload = function() {
             var familyname = document.getElementById("new-familyname").value;
             var city = document.getElementById("city").value;
             var country = document.getElementById("country").value;
+            var sex = document.getElementById("female-radio-btn").checked ? "female" : "male";
 
             testUsername = username.length>0 && ((/^[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]{2,6}$/.test(username)));
             testPassword = (password.localeCompare(passwordb) == 0) && password.length>5;
@@ -80,17 +65,34 @@ window.onload = function() {
             testCity = city.length>0;
             testCountry = country.length>0;
 
-            valide = testUsername && testPassword && testFirstName && testFamilyName && testCity && testCountry
-            console.log(valide);
+            valide = testUsername && testPassword && testFirstName && testFamilyName && testCity && testCountry;
 
             if(valide){
-                alert("Sign up succesful ! Good job dickhead !")
-                document.getElementById("error-area-signup").removeChild(document.getElementById("signup-error"));
-                document.getElementById("up-username-form").setAttribute("class", "input-form");
-                document.getElementById("up-password-form").setAttribute("class", "input-form");
-                document.getElementById("up-password-form").setAttribute("class", "input-form");
-                document.getElementById("up-name-form").setAttribute("class", "input-form");
-                document.getElementById("up-address-form").setAttribute("class", "input-form");
+                var jsonFile = { email : username, password : password, firstname : firstname, familyname : familyname,
+                    gender : sex, city : city, country : country};
+                var connection = serverstub.signUp(jsonFile);
+
+                if(connection.success){
+                    // Ok, redirection vers profile page
+                }else{
+                    var errorconnectionlabel = document.createElement("label");
+                    errorconnectionlabel.setAttribute("class", "label label-danger");
+                    errorconnectionlabel.setAttribute("id", "signup-connection-error");
+                    errorconnectionlabel.innerText = connection.message;
+                    document.getElementById("error-area-signup").appendChild(errorconnectionlabel);
+                }
+                console.log(connection.success);
+                console.log(connection.message);
+
+                if(document.getElementById("signup-error") != null) {
+                    document.getElementById("error-area-signup").removeChild(document.getElementById("signup-error"));
+                    document.getElementById("up-username-form").setAttribute("class", "input-form");
+                    document.getElementById("up-password-form").setAttribute("class", "input-form");
+                    document.getElementById("up-password-form").setAttribute("class", "input-form");
+                    document.getElementById("up-name-form").setAttribute("class", "input-form");
+                    document.getElementById("up-address-form").setAttribute("class", "input-form");
+                }
+
             }else{
                 if(document.getElementById("login-error") != null){
                     // Sign-in has errors and need to be cleaned
@@ -132,14 +134,15 @@ window.onload = function() {
                     document.getElementById("up-address-form").setAttribute("class", "input-form");
                 }
             }
+
             return false;
         });
 
-        
     }else{
         var profileDiv = document.getElementById("profile-display");
         profileDiv.innerHTML = document.getElementById('profile-view').innerHTML ;
     }
+
 
 
 
@@ -152,5 +155,23 @@ window.onload = function() {
     document.getElementById('ad').appendChild(img);
 };
 
-
-
+function displayErrorSignIn(res) {
+    document.getElementById("in-username-form").setAttribute("class", "input-group has-error");
+    document.getElementById("in-password-form").setAttribute("class", "input-group has-error");
+    if (document.getElementById("login-error") == null) {
+        var errorlabel = document.createElement("label");
+        errorlabel.setAttribute("class", "label label-danger");
+        errorlabel.setAttribute("id", "login-error");
+        errorlabel.innerText = res.message;
+        document.getElementById("error-area-signin").appendChild(errorlabel);
+    }
+    if (document.getElementById("signup-error") != null) {
+        // Sign-up has errors and need to be cleaned
+        document.getElementById("error-area-signup").removeChild(document.getElementById("signup-error"));
+        document.getElementById("up-username-form").setAttribute("class", "input-form");
+        document.getElementById("up-password-form").setAttribute("class", "input-form");
+        document.getElementById("up-password-form").setAttribute("class", "input-form");
+        document.getElementById("up-name-form").setAttribute("class", "input-form");
+        document.getElementById("up-address-form").setAttribute("class", "input-form");
+    }
+}

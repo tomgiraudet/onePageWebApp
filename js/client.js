@@ -109,6 +109,7 @@ window.onload = function() {
         document.getElementById('ad').appendChild(img);
 
     }else{
+        var token = localStorage.getItem("loggedinusers");
 
         // Logged
         var profileDiv = document.getElementById("profile-display");
@@ -135,6 +136,48 @@ window.onload = function() {
             document.getElementById('browse').style.display = "none";
         });
 
+
+        // ACCOUNT VIEW : CHANGE PASSWORD
+        var changepasswordbtn = document.getElementById("valid-change-password");
+
+        changepasswordbtn.setAttribute("onclick", "return false;");  // make the page not refresh
+        changepasswordbtn.addEventListener("click", function(){
+            oldpassword = document.getElementById("logged-old-password").value;
+            newpassword = document.getElementById("logged-new-password").value;
+
+            if ((oldpassword != "") && (newpassword != "")) {
+                msg = serverstub.changePassword(token, oldpassword, newpassword);
+                console.log(msg);
+
+                if (msg.success) {
+                    // Display valid message
+                    document.getElementById("form-change-password").setAttribute("class", "form-group");
+                    document.getElementById("response-area-account").removeChild(document.getElementById("change-password-error"));
+
+                    accountvalidlabel = document.createElement("label");
+                    accountvalidlabel.setAttribute("class", "label label-success");
+                    accountvalidlabel.setAttribute("id", "change-password-valid");
+                    accountvalidlabel.style.marginLeft = "15px";
+                    accountvalidlabel.innerText = "Your password is changed";
+                    document.getElementById("response-area-account").appendChild(accountvalidlabel);
+
+                }else{
+                    displayErrorChangePassword(msg.message);
+                }
+
+            }else{
+                displayErrorChangePassword("Complete the fields");
+            }
+        });
+
+        // LOGGOUT
+        var loggoutbtn = document.getElementById("loggout-btn");
+        loggoutbtn.setAttribute("onclick", "return false;");  // make the page not refresh
+        loggoutbtn.addEventListener("click", function(){
+            serverstub.signOut(token);
+        });
+
+
         // Display profil information:
         /*mailAddressUser = localStorage.getItem("loggedinusers").email;
         firstNameUser = localStorage.getItem("loggedinusers").firstname;
@@ -160,6 +203,21 @@ window.onload = function() {
     }
 
 };
+
+function displayErrorChangePassword(msg){
+    document.getElementById("form-change-password").setAttribute("class", "form-group has-error");
+    if(document.getElementById("change-password-valid") != null) document.getElementById("response-area-account").removeChild(document.getElementById("change-password-valid"));
+    if(document.getElementById("change-password-error") != null) document.getElementById("response-area-account").removeChild(document.getElementById("change-password-error"));
+    if(document.getElementById("change-password-error") == null){
+        accounterrorlabel = document.createElement("label");
+        accounterrorlabel.setAttribute("class", "label label-danger");
+        accounterrorlabel.style.marginLeft = "15px";
+        accounterrorlabel.setAttribute("id", "change-password-error");
+        accounterrorlabel.innerText = msg;
+    }
+    document.getElementById("response-area-account").appendChild(accounterrorlabel);
+}
+
 
 function displayErrorSignUp(msg){
 

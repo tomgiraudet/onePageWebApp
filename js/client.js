@@ -130,6 +130,34 @@ window.onload = function() {
             document.getElementById('account').style.display = "block";
             document.getElementById('browse').style.display = "none";
         });
+
+
+        // ACCOUNT VIEW : CHANGE PASSWORD
+        var changepasswordbtn = document.getElementById("valid-change-password");
+        var token = localStorage.getItem("loggedinusers");
+        oldpassword = document.getElementById("logged-old-password").value;
+        newpassword = document.getElementById("logged-new-password").value;
+
+        changepasswordbtn.setAttribute("onclick", "return false;");  // make the page not refresh
+        changepasswordbtn.addEventListener("click", function(){
+            if (oldpassword != "" && newpassword != "") {
+                document.getElementById("form-change-password").setAttribute("class", "form-group");
+                msg = serverstub.changePassword(token, oldpassword, newpassword);
+                console.log(msg);
+            }else{
+                document.getElementById("form-change-password").setAttribute("class", "form-group has-error");
+            }
+        });
+
+        // LOGGOUT
+        var loggoutbtn = document.getElementById("loggout-btn");
+        loggoutbtn.setAttribute("onclick", "return false;");  // make the page not refresh
+        loggoutbtn.addEventListener("click", function(){
+            serverstub.signOut(token);
+        });
+
+
+
     }
 
 };

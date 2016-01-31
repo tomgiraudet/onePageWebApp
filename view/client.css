@@ -122,6 +122,7 @@ body{
     color: white;
     text-align: center;
     font-weight: bold;
+    font-size: x-large;
 }
 
 .forms-label-sign{
@@ -176,6 +177,21 @@ body{
 
 
 #header-change-password{
+    padding-left: 15px;
+    padding-bottom: 15px;
     color: white;
+    font-size: large;
 }
 
+#form-change-password{
+    padding-left: 15px;
+    width: 60%;
+}
+
+#logged-old-password{
+    margin-bottom: 5px;
+}
+
+#valid-change-password{
+    margin-left: 35%;
+}

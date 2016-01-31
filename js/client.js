@@ -17,8 +17,9 @@ function randomimage() {
 
 
 window.onload = function() {
-    // Not logged :
-    if (localStorage.getItem("loggedinusers") === null) {
+
+    // TODO : check if it's the good way
+    if (localStorage.getItem("loggedinusers") == "{}" || localStorage.getItem("loggedinusers") === null) {
         displayWelcomeView();
     }else{
         displayProfileView();
@@ -97,12 +98,11 @@ function displayWelcomeView(){
 
             if(connection.success){
                 document.getElementById("signup-form").reset();
+                serverstub.signIn(username, password);
                 changeWelcomeToProfile();
             }else{
                 displayErrorSignUp(connection.message);
             }
-
-
         }else{
             // Display error
             displayErrorSignUp("Please check your information.");
@@ -119,7 +119,8 @@ function displayWelcomeView(){
 }
 
 function displayProfileView(){
-    var token = localStorage.getItem("loggedinusers");
+    // TODO : HERE I GET THE TOKEN
+    var token = Object.keys(JSON.parse(localStorage.getItem("loggedinusers")));
 
     // Logged
     var profileDiv = document.getElementById("profile-display");
@@ -183,25 +184,34 @@ function displayProfileView(){
     var loggoutbtn = document.getElementById("loggout-btn");
     loggoutbtn.setAttribute("onclick", "return false;");  // make the page not refresh
     loggoutbtn.addEventListener("click", function(){
-        serverstub.signOut(token);
+        loggedInUsers = JSON.parse(localStorage.getItem("loggedinusers"));
+        console.log(loggedInUsers);
+        console.log(loggedInUsers[1]);
+        // TODO : Problem with loggout : not deleting the loggedInUsers..
+        serverstub.signOut("ggTc15UMrMl5klIwE0y6cKWmqDICC3XbA5i0");
         changeProfileToWelcome();
     });
 
 
     // Display profil information:
-    /*mailAddressUser = localStorage.getItem("loggedinusers").email;
-     firstNameUser = localStorage.getItem("loggedinusers").firstname;
-     familyNameUser = localStorage.getItem("loggedinusers").familyname;
-     sexUser = localStorage.getItem("loggedinusers").gender;
-     cityUser = localStorage.getItem("loggedinusers").city;
-     countryUser = localStorage.getItem("loggedinusers").country;*/
+    var user = serverstub.getUserMessagesByToken(token);
+    var userinformation = user.data;
+    console.log("user " + userinformation);
+    console.log(user);
 
-    /*document.getElementById("profil_username").innerHTML = mailAddressUser;
+    mailAddressUser = userinformation.email;
+     firstNameUser = userinformation.firstname;
+     familyNameUser = userinformation.familyname;
+     sexUser = userinformation.gender;
+     cityUser = userinformation.city;
+     countryUser = userinformation.country;
+
+    document.getElementById("profil_username").innerHTML = mailAddressUser;
      document.getElementById("profil_first_name").innerHTML = firstNameUser;
      document.getElementById("profil_family_name").innerHTML = familyNameUser;
      document.getElementById("profil_sex").innerHTML = sexUser;
      document.getElementById("profil_city").innerHTML = cityUser;
-     document.getElementById("profil_country").innerHTML = countryUser;*/
+     document.getElementById("profil_country").innerHTML = countryUser;
 
 
 

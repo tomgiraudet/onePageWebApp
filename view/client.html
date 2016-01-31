@@ -18,7 +18,7 @@
 
 <!--<script id="welcome-view" type=”text/view”>-->
 <script id="welcome-view" type="text/html">
-    <nav class="header" class="shadow-top">
+    <nav class="shadow-top header">
         <img class="header-logo" src="../public/img/header.png"/>
     </nav>
 
@@ -107,36 +107,42 @@
 
 
 <div id="profile-display"></div>
-<script id="profile-view"  type=”text/html”>
-<div id="profile-page" >
-    <nav id="profile-navbar" class="shadow-top header">
-        <img class="header-logo" src="../public/img/header.png"/>
 
-    </nav>
-
-    <div id="page" class="row">
-        <div id="side-panel" class="shadow welcome-block col-md-2 col-md-offset-1">
-            <div class="title-sign">Profil</div>
+<script id="profile-view"  type="text/html">
+    <div id="profile-page" >
+        <div id="profile-navbar" class="shadow-top header">
+            <img class="header-logo" src="../public/img/header.png"/>
+            <div class="navbar-menu">
+                <a id="home-btn" class="navbar-item" href="#">Home</a>
+                <a id="browse-btn" class="navbar-item" href="#">Browse</a>
+                <a id="account-btn" class="navbar-item" href="#">Account</a>
+                <a class="navbar-item" href="/js/">Logout <span class="glyphicon glyphicon-log-out"></span></a>
+            </div>
         </div>
-        <div id="general-panel" class=" col-md-8">
-            <div id="home">
-                <div class="shadow welcome-block">
-                    <div class="title-sign">Home</div>
-                </div>
+
+        <div id="page" class="row">
+            <div id="side-panel" class="shadow welcome-block col-md-2 col-md-offset-1">
+                <div class="title-sign">Profil</div>
             </div>
-            <div id="browse">
-                <div class="shadow welcome-block">
-                    <div class="title-sign">Browse</div>
+            <div id="general-panel" class=" col-md-8">
+                <div id="home">
+                    <div class="shadow welcome-block">
+                        <div class="title-sign">Home</div>
+                    </div>
                 </div>
-            </div>
-            <div id="account">
-                <div class="shadow welcome-block">
-                    <div class="title-sign">Account</div>
+                <div id="browse">
+                    <div class="shadow welcome-block">
+                        <div class="title-sign">Browse</div>
+                    </div>
+                </div>
+                <div id="account">
+                    <div class="shadow welcome-block">
+                        <div class="title-sign">Account</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 </script>
 
 </body>

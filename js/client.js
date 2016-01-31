@@ -18,6 +18,8 @@ function randomimage() {
 
 window.onload = function() {
     localStorage.setItem("token", "test");
+
+    // Not logged :
     if (localStorage.getItem("token") === null) {
         //if (localStorage.getItem("loggedinusers") === null) {
         var welcomeDiv = document.getElementById("welcome-display");
@@ -107,6 +109,8 @@ window.onload = function() {
         document.getElementById('ad').appendChild(img);
 
     }else{
+
+        // Logged
         var profileDiv = document.getElementById("profile-display");
         profileDiv.innerHTML = document.getElementById('profile-view').innerHTML ;
 
@@ -130,6 +134,21 @@ window.onload = function() {
             document.getElementById('account').style.display = "block";
             document.getElementById('browse').style.display = "none";
         });
+
+        // Display profil information:
+        mailAddressUser = localStorage.getItem("loggedinusers").email;
+        firstNameUser = localStorage.getItem("loggedinusers").firstname;
+        familyNameUser = localStorage.getItem("loggedinusers").familyname;
+        sexUser = localStorage.getItem("loggedinusers").gender;
+        cityUser = localStorage.getItem("loggedinusers").city;
+        countryUser = localStorage.getItem("loggedinusers").country;
+
+        document.getElementById("profil_username").innerHTML = mailAddressUser;
+        document.getElementById("profil_first_name").innerHTML = firstNameUser;
+        document.getElementById("profil_family_name").innerHTML = familyNameUser;
+        document.getElementById("profil_sex").innerHTML = sexUser;
+        document.getElementById("profil_city").innerHTML = cityUser;
+        document.getElementById("profil_country").innerHTML = countryUser;
     }
 
 };

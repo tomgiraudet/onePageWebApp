@@ -201,33 +201,33 @@ function displayProfileView(){
         profilearea = document.createElement("div");
         profilearea.setAttribute("class", "col-md-2 side-panel");
         profilearea.innerHTML =
-                "<div class='title-sign'> Profile </div>" +
-                "<div class='container'> " +
-                    "<dl>" +
-                        "<dt>Username : </dt>" +
-                        "<div id='profil_username'>"+ founduser.email +"</div>" +
-                        "<br>" +
-                        "<dt>First name : </dt>" +
-                        "<div id='profil_first_name'>"+ founduser.firstname +"</div>" +
-                        "<br>" +
-                        "<dt>Name : </dt>" +
-                        "<div id='profil_family_name'>"+ founduser.familyname + "</div>" +
-                        "<br>" +
-                        "<dt>Sex : </dt>" +
-                        "<div id='profil_sex'>"+ founduser.gender + "</div>" +
-                        "<br>" +
-                        "<dt>City :</dt>" +
-                        "<div id='profil_city'>"+ founduser.city + "</div>" +
-                        "<br>" +
-                        "<dt>Country :</dt>" +
-                        "<div id='profil_country'>"+ founduser.country + "</div>" +
-                    "</dl>" +
-                "</div>";
+            "<div class='title-sign'> Profile </div>" +
+            "<div class='container'> " +
+            "<dl>" +
+            "<dt>Username : </dt>" +
+            "<div id='profil_username'>"+ founduser.email +"</div>" +
+            "<br>" +
+            "<dt>First name : </dt>" +
+            "<div id='profil_first_name'>"+ founduser.firstname +"</div>" +
+            "<br>" +
+            "<dt>Name : </dt>" +
+            "<div id='profil_family_name'>"+ founduser.familyname + "</div>" +
+            "<br>" +
+            "<dt>Sex : </dt>" +
+            "<div id='profil_sex'>"+ founduser.gender + "</div>" +
+            "<br>" +
+            "<dt>City :</dt>" +
+            "<div id='profil_city'>"+ founduser.city + "</div>" +
+            "<br>" +
+            "<dt>Country :</dt>" +
+            "<div id='profil_country'>"+ founduser.country + "</div>" +
+            "</dl>" +
+            "</div>";
 
         wallarea = document.createElement("div");
         messageUser = (serverstub.getUserMessagesByEmail(token,  document.getElementById("search-user-input").value)).data;
         wallarea.innerHTML = "<div class='title-sign'> Wall </div>"+
-                "<div>"+ messageUser + "</div>";
+            "<div>"+ messageUser + "</div>";
         founduserwall.appendChild(profilearea);
         founduserwall.appendChild(wallarea);
     });
@@ -290,31 +290,20 @@ function displayProfileView(){
 
     });
 
+    // Display message on Home page
+    var msg = serverstub.getUserMessagesByToken(token);
+    displayMessageHomePage(msg);
 
     // Refresh button of newsfeed :
     document.getElementById("btn-refresh").addEventListener("click", function(){
         content = document.getElementById("newsfeed");
-        content.empty();
-
+        content.innerHTML = "";
+        
+        var token = Object.keys(JSON.parse(localStorage.getItem("loggedinusers")));
+        var msg = serverstub.getUserMessagesByToken(token);
+        displayMessageHomePage(msg);
     });
 
-
-    // Display message on Home page
-    var msg = serverstub.getUserMessagesByToken(token);
-    var template = $(".message.hidden");
-    if(msg.success){
-        console.log(msg.data);
-        msg.data.forEach(function (message){
-            var msg = template.clone().removeClass("hidden");
-            console.log(message.content);
-            console.log(msg);
-            div = document.createElement("div");
-            div.setAttribute("class", "panel-body content-message");
-            div.innerHTML = message.content;
-            msg.append(div);
-            $("#newsfeed").append(msg);
-        });
-    }
 }
 
 function changeProfileToWelcome(){
@@ -390,8 +379,21 @@ function displayErrorSignIn(res) {
     }
 }
 
-function displayErrorShare(msg){
 
+function displayMessageHomePage(msg){
+    var template = $(".message.hidden");
+    if(msg.success){
+        msg.data.forEach(function (message){
+            var msg = template.clone().removeClass("hidden");
+            div = document.createElement("div");
+            div.setAttribute("class", "panel-body content-message");
+            div.innerHTML = message.content;
+            msg.append(div);
+            $("#newsfeed").append(msg);
+        });
+    }
+}
+function displayErrorShare(msg){
     if(document.getElementById("share-error") == null){
         var errorlabel = document.createElement("label");
         errorlabel.setAttribute("class", "label label-danger");

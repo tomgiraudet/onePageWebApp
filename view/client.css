@@ -74,7 +74,7 @@ body{
 
 #ad{
     width: 310px;
-    height: 510px;
+    height: 505px;
     display: inline-block;
     vertical-align: top;
     margin-right: 15px;
@@ -158,7 +158,7 @@ body{
     margin-right: auto;
 }
 
-#side-panel{
+.side-panel{
     color: white;
 }
 
@@ -178,10 +178,12 @@ body{
 /* PROFILE VIEW */
 #browse{
     display: none;
+    overflow:auto;
 }
 
 #account{
     display: none;
+    overflow:auto;
 }
 
 
@@ -205,3 +207,18 @@ body{
     margin-left: 35%;
 }
 
+
+/* BROWSE VIEW */
+#search-user-label{
+    color: white;
+    margin-right: 10px;
+}
+
+#search-user-input{
+    width: 450px;
+    margin-right: 10px;
+}
+
+#user-wall-area{
+    margin-top: 15px;
+}

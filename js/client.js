@@ -296,11 +296,15 @@ function displayProfileView(){
 
     // Refresh button of newsfeed :
     document.getElementById("btn-refresh").addEventListener("click", function(){
+        //Clear
         content = document.getElementById("newsfeed");
-        content.innerHTML = "";
+        content.innerHTML = "<div class=\"message panel panel-default hidden\"> <\/div>";
         
+        // Reload
         var token = Object.keys(JSON.parse(localStorage.getItem("loggedinusers")));
+        console.log(token)
         var msg = serverstub.getUserMessagesByToken(token);
+        console.log(msg)
         displayMessageHomePage(msg);
     });
 
@@ -381,7 +385,9 @@ function displayErrorSignIn(res) {
 
 
 function displayMessageHomePage(msg){
+    console.log("Displaying message");
     var template = $(".message.hidden");
+    console.log(template);
     if(msg.success){
         msg.data.forEach(function (message){
             var msg = template.clone().removeClass("hidden");

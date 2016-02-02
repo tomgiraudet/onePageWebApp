@@ -202,39 +202,39 @@ function displayProfileView(){
             // TODO : Display error
         }else{
             founduser = founduser.data;
-        profilearea = document.createElement("div");
-        profilearea.setAttribute("class", "col-md-2 side-panel");
-        profilearea.setAttribute("id", "search-user-id");
-        profilearea.innerHTML =
-            "<div class='title-sign'> Profile </div>" +
-            "<div class='container'> " +
-            "<dl>" +
-            "<dt>Username : </dt>" +
-            "<div id='profil_username'>"+ founduser.email +"</div>" +
-            "<br>" +
-            "<dt>First name : </dt>" +
-            "<div id='profil_first_name'>"+ founduser.firstname +"</div>" +
-            "<br>" +
-            "<dt>Name : </dt>" +
-            "<div id='profil_family_name'>"+ founduser.familyname + "</div>" +
-            "<br>" +
-            "<dt>Sex : </dt>" +
-            "<div id='profil_sex'>"+ founduser.gender + "</div>" +
-            "<br>" +
-            "<dt>City :</dt>" +
-            "<div id='profil_city'>"+ founduser.city + "</div>" +
-            "<br>" +
-            "<dt>Country :</dt>" +
-            "<div id='profil_country'>"+ founduser.country + "</div>" +
-            "</dl>" +
-            "</div>";
+            profilearea = $("#search-user-id");
+            //profilearea = document.getElementById("search-user-id");
+            console.log("profile area: " + profilearea);
+            profilearea.innerHTML =
+                "<div class='title-sign'> Profile </div>" +
+                "<div class='container'> " +
+                "<dl>" +
+                "<dt>Username : </dt>" +
+                "<div id='profil_username'>"+ founduser.email +"</div>" +
+                "<br>" +
+                "<dt>First name : </dt>" +
+                "<div id='profil_first_name'>"+ founduser.firstname +"</div>" +
+                "<br>" +
+                "<dt>Name : </dt>" +
+                "<div id='profil_family_name'>"+ founduser.familyname + "</div>" +
+                "<br>" +
+                "<dt>Sex : </dt>" +
+                "<div id='profil_sex'>"+ founduser.gender + "</div>" +
+                "<br>" +
+                "<dt>City :</dt>" +
+                "<div id='profil_city'>"+ founduser.city + "</div>" +
+                "<br>" +
+                "<dt>Country :</dt>" +
+                "<div id='profil_country'>"+ founduser.country + "</div>" +
+                "</dl>" +
+                "</div>";
 
-        wallarea = document.createElement("div");
-        messageUser = (serverstub.getUserMessagesByEmail(token,  document.getElementById("search-user-input").value)).data;
-        wallarea.innerHTML = "<div class='title-sign'> Wall </div>"+
-            "<div>"+ messageUser + "</div>";
-        founduserwall.appendChild(profilearea);
-        founduserwall.appendChild(wallarea);
+            wallarea = document.createElement("div");
+            messageUser = (serverstub.getUserMessagesByEmail(token,  document.getElementById("search-user-input").value));
+            displayMessageHomePage(messageUser);
+
+            founduserwall.append(profilearea);
+            founduserwall.appendChild(wallarea);
         }
 
     });
@@ -305,7 +305,7 @@ function displayProfileView(){
     document.getElementById("btn-refresh").addEventListener("click", function(){
         content = document.getElementById("newsfeed");
         content.innerHTML = "";
-        
+
         var token = Object.keys(JSON.parse(localStorage.getItem("loggedinusers")));
         var msg = serverstub.getUserMessagesByToken(token);
         displayMessageHomePage(msg);

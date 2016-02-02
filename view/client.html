@@ -180,18 +180,28 @@
                     </div>
                 </div>
                 <div class="shadow welcome-block" id="browse">
-                        <div class="title-sign">Browse</div>
-                        <div id="search-user">
-                            <form class="form-inline">
-                                <div class="form-group">
-                                    <label id="search-user-label" for="search-user-input">Find a user: </label>
-                                    <input type="email" class="form-control" id="search-user-input" placeholder="Enter a username">
+                    <div class="title-sign">Browse</div>
+                    <div id="search-user">
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label id="search-user-label" for="search-user-input">Find a user: </label>
+                                <input type="email" class="form-control" id="search-user-input" placeholder="Enter a username">
+                            </div>
+                            <button id="search-user-btn" type="submit" class="btn btn-default">Find!</button>
+                        </form>
+                    </div>
+                    <div id="user-wall-area">
+                        <div  id="search-user-id" class="col-md-2 side-panel"></div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">News feed : <button id="btn-refresh"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button></h3>
+                            </div>
+                            <div id="newsfeed">
+                                <div class="message panel panel-default hidden">
                                 </div>
-                                <button id="search-user-btn" type="submit" class="btn btn-default">Find!</button>
-                            </form>
+                            </div>
                         </div>
-                        <div id="user-wall-area">
-                        </div>
+                    </div>
                 </div>
                 <div id="account">
                     <div class="shadow welcome-block">

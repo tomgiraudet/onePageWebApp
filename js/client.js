@@ -299,7 +299,7 @@ function displayProfileView(){
         //Clear
         content = document.getElementById("newsfeed");
         content.innerHTML = "<div class=\"message panel panel-default hidden\"> <\/div>";
-        
+
         // Reload
         var token = Object.keys(JSON.parse(localStorage.getItem("loggedinusers")));
         console.log(token)
@@ -338,19 +338,13 @@ function displayErrorChangePassword(msg){
 
 
 function displayErrorSignUp(msg){
-
-    if(document.getElementById("login-error") != null){
-        // Sign-in has errors and need to be cleaned
-        document.getElementById("in-username-form").setAttribute("class", "input-group");
-        document.getElementById("in-password-form").setAttribute("class", "input-group");
-        document.getElementById("error-area-signin").removeChild(document.getElementById("login-error"));
-    }
-
     if(document.getElementById("signup-error") == null){
         var errorlabel = document.createElement("label");
         errorlabel.setAttribute("class", "label label-danger");
         errorlabel.setAttribute("id", "signup-error");
         errorlabel.innerText = msg;
+    }else{
+        document.getElementById("signup-error").innerHTML(msg);
     }
 
     document.getElementById("error-area-signup").appendChild(errorlabel);
@@ -420,6 +414,6 @@ function displaySuccessShare(msg){
 
 function eraseErrorShare(){
     if(document.getElementById("share-error") != null){
-        document.getElementById("share-error").removeChild(document.getElementById("share-error"));
+        document.getElementById("share-error").innerHTML = "";
     }
 }

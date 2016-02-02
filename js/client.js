@@ -18,7 +18,6 @@ function randomimage() {
 
 window.onload = function() {
 
-    // TODO : check if it's the good way
     if (localStorage.getItem("loggedinusers") == "{}" || localStorage.getItem("loggedinusers") === null) {
         displayWelcomeView();
     }else{
@@ -119,7 +118,6 @@ function displayWelcomeView(){
 }
 
 function displayProfileView(){
-    // TODO : HERE I GET THE TOKEN
     var token = Object.keys(JSON.parse(localStorage.getItem("loggedinusers")));
 
     // Logged
@@ -163,7 +161,7 @@ function displayProfileView(){
             if (msg.success) {
                 // Display valid message
                 document.getElementById("form-change-password").setAttribute("class", "form-group");
-                document.getElementById("response-area-account").removeChild(document.getElementById("change-password-error"));
+                if(document.getElementById("change-password-error") != null) document.getElementById("response-area-account").removeChild(document.getElementById("change-password-error"));
 
                 accountvalidlabel = document.createElement("label");
                 accountvalidlabel.setAttribute("class", "label label-success");
@@ -184,20 +182,15 @@ function displayProfileView(){
     var loggoutbtn = document.getElementById("loggout-btn");
     loggoutbtn.setAttribute("onclick", "return false;");  // make the page not refresh
     loggoutbtn.addEventListener("click", function(){
-        loggedInUsers = JSON.parse(localStorage.getItem("loggedinusers"));
-        console.log(loggedInUsers);
-        console.log(loggedInUsers[1]);
-        // TODO : Problem with loggout : not deleting the loggedInUsers..
-        serverstub.signOut("ggTc15UMrMl5klIwE0y6cKWmqDICC3XbA5i0");
+        loggedInUsers = Object.keys(JSON.parse(localStorage.getItem("loggedinusers")));
+        serverstub.signOut(loggedInUsers);
         changeProfileToWelcome();
     });
 
 
     // Display profil information:
-    var user = serverstub.getUserMessagesByToken(token);
-    var userinformation = user.data;
-    console.log("user " + userinformation);
-    console.log(user);
+    var user = serverstub.getUserDataByToken(token);
+    userinformation = user.data;
 
     mailAddressUser = userinformation.email;
      firstNameUser = userinformation.firstname;
@@ -220,6 +213,54 @@ function displayProfileView(){
         content = document.getElementById("newsfeed");
         $("#newsfeed").load(content);
     });
+
+
+    // BROWSER
+    var searchuserbtn = document.getElementById("search-user-btn");
+    searchuserbtn.setAttribute("onclick", "return false;");
+
+    var founduser;
+    var founduserwall = document.getElementById("user-wall-area");
+    searchuserbtn.addEventListener("click", function(){
+
+
+        founduser = serverstub.getUserDataByEmail(token,  document.getElementById("search-user-input").value);
+        founduser = founduser.data;
+        profilearea = document.createElement("div");
+        profilearea.setAttribute("class", "col-md-2 side-panel");
+        profilearea.innerHTML =
+                "<div class='title-sign'> Profile </div>" +
+                "<div class='container'> " +
+                    "<dl>" +
+                        "<dt>Username : </dt>" +
+                        "<div id='profil_username'>"+ founduser.email +"</div>" +
+                        "<br>" +
+                        "<dt>First name : </dt>" +
+                        "<div id='profil_first_name'>"+ founduser.firstname +"</div>" +
+                        "<br>" +
+                        "<dt>Name : </dt>" +
+                        "<div id='profil_family_name'>"+ founduser.familyname + "</div>" +
+                        "<br>" +
+                        "<dt>Sex : </dt>" +
+                        "<div id='profil_sex'>"+ founduser.gender + "</div>" +
+                        "<br>" +
+                        "<dt>City :</dt>" +
+                        "<div id='profil_city'>"+ founduser.city + "</div>" +
+                        "<br>" +
+                        "<dt>Country :</dt>" +
+                        "<div id='profil_country'>"+ founduser.country + "</div>" +
+                    "</dl>" +
+                "</div>";
+
+        wallarea = document.createElement("div");
+        messageUser = (serverstub.getUserMessagesByEmail(token,  document.getElementById("search-user-input").value)).data;
+        wallarea.innerHTML = "<div class='title-sign'> Wall </div>"+
+                "<div>"+ messageUser + "</div>";
+        founduserwall.appendChild(profilearea);
+        founduserwall.appendChild(wallarea);
+    });
+
+
 }
 
 function changeProfileToWelcome(){

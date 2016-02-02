@@ -156,7 +156,6 @@ function displayProfileView(){
 
         if ((oldpassword != "") && (newpassword != "")) {
             msg = serverstub.changePassword(token, oldpassword, newpassword);
-            console.log(msg);
 
             if (msg.success) {
                 // Display valid message
@@ -168,7 +167,7 @@ function displayProfileView(){
                 accountvalidlabel.setAttribute("id", "change-password-valid");
                 accountvalidlabel.style.marginLeft = "15px";
                 accountvalidlabel.innerText = "Your password is changed";
-                document.getElementById("response-area-account").appendChild(accountvalidlabel);
+                if(document.getElementById("change-password-valid") == null) document.getElementById("response-area-account").appendChild(accountvalidlabel);
 
             }else{
                 displayErrorChangePassword(msg.message);
@@ -197,14 +196,16 @@ function displayProfileView(){
         if (document.getElementById("search-user-id") != null) {
             founduserwall.innerHTML = "";
         }
-        founduser = serverstub.getUserDataByEmail(token,  document.getElementById("search-user-input").value);
+        searchmail = document.getElementById("search-user-input").value;
+        founduser = serverstub.getUserDataByEmail(token,  searchmail);
         if(founduser.success == false){
             // TODO : Display error
         }else{
             founduser = founduser.data;
-            profilearea = $("#search-user-id");
-            //profilearea = document.getElementById("search-user-id");
-            console.log("profile area: " + profilearea);
+            profilearea = document.createElement("div");
+            profilearea.setAttribute("class", "col-md-4 side-panel");
+            profilearea.setAttribute("id", "search-user-id");
+
             profilearea.innerHTML =
                 "<div class='title-sign'> Profile </div>" +
                 "<div class='container'> " +
@@ -230,11 +231,23 @@ function displayProfileView(){
                 "</div>";
 
             wallarea = document.createElement("div");
-            messageUser = (serverstub.getUserMessagesByEmail(token,  document.getElementById("search-user-input").value));
-            displayMessageHomePage(messageUser);
+            wallarea.setAttribute("class", "panel panel-default col-xs-8");
+            wallarea.setAttribute("id", "search-user-wall");
+            wallarea.innerHTML = "<div class='panel-heading'>" +
+                "<h3 class='panel-title'>News feed : <button id='btn-refresh-wall'><span class='glyphicon glyphicon-refresh' aria-hidden='true'></span></button></h3>" +
+                "</div>" +
+                "<div id='wall-user'>" +
+                "<div class='wall panel panel-default hidden'></div>" +
+                "</div>";
 
-            founduserwall.append(profilearea);
+            console.log("search people : " + searchmail);
+            messageUser = (serverstub.getUserMessagesByEmail(token, searchmail));
+            console.log(messageUser.data);
+
+            founduserwall.appendChild(profilearea);
             founduserwall.appendChild(wallarea);
+
+            displayMessageBrowserPage(messageUser);
         }
 
     });
@@ -278,18 +291,13 @@ function displayProfileView(){
         }else {
             // Post to someone else's wall
             res = serverstub.postMessage(token, content, destination);
-            if (res.message = "No such user.") {
-                // Unknown user
+            if(res.success == false){
                 displayErrorShare(res.message);
             } else {
-                if (res.message = "You are not signed in.") {
-                    displayErrorShare(res.message);
-                } else {
-                    eraseErrorShare();
-                    displaySuccessShare(res.message);
-                    console.log("posted on an other wall");
-                    document.getElementById("comment").value = "";
-                }
+                eraseErrorShare();
+                displaySuccessShare(res.message);
+                console.log("posted on an other wall");
+                document.getElementById("comment").value = "";
             }
         }
 
@@ -303,9 +311,11 @@ function displayProfileView(){
 
     // Refresh button of newsfeed :
     document.getElementById("btn-refresh").addEventListener("click", function(){
+        //Clear
         content = document.getElementById("newsfeed");
-        content.innerHTML = "";
+        content.innerHTML = "<div class=\"message panel panel-default hidden\"> <\/div>";
 
+        // Reload
         var token = Object.keys(JSON.parse(localStorage.getItem("loggedinusers")));
         var msg = serverstub.getUserMessagesByToken(token);
         displayMessageHomePage(msg);
@@ -341,19 +351,13 @@ function displayErrorChangePassword(msg){
 
 
 function displayErrorSignUp(msg){
-
-    if(document.getElementById("login-error") != null){
-        // Sign-in has errors and need to be cleaned
-        document.getElementById("in-username-form").setAttribute("class", "input-group");
-        document.getElementById("in-password-form").setAttribute("class", "input-group");
-        document.getElementById("error-area-signin").removeChild(document.getElementById("login-error"));
-    }
-
     if(document.getElementById("signup-error") == null){
         var errorlabel = document.createElement("label");
         errorlabel.setAttribute("class", "label label-danger");
         errorlabel.setAttribute("id", "signup-error");
         errorlabel.innerText = msg;
+    }else{
+        document.getElementById("signup-error").innerHTML(msg);
     }
 
     document.getElementById("error-area-signup").appendChild(errorlabel);
@@ -400,6 +404,23 @@ function displayMessageHomePage(msg){
         });
     }
 }
+
+function displayMessageBrowserPage(msg){
+    var template = $(".wall.hidden");
+    if(msg.success){
+        msg.data.forEach(function (message){
+            console.log("message user " + message.content);
+            var msg = template.clone().removeClass("hidden");
+            div = document.createElement("div");
+            div.setAttribute("class", "panel-body content-message");
+            div.innerHTML = message.content;
+            msg.append(div);
+            $("#wall-user").append(msg);
+        });
+    }
+}
+
+
 function displayErrorShare(msg){
     if(document.getElementById("share-error") == null){
         var errorlabel = document.createElement("label");
@@ -421,6 +442,6 @@ function displaySuccessShare(msg){
 
 function eraseErrorShare(){
     if(document.getElementById("share-error") != null){
-        document.getElementById("share-error").removeChild(document.getElementById("share-error"));
+        document.getElementById("share-error").innerHTML = "";
     }
 }

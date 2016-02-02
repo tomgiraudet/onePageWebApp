@@ -194,12 +194,17 @@ function displayProfileView(){
     var founduser;
     var founduserwall = document.getElementById("user-wall-area");
     searchuserbtn.addEventListener("click", function(){
-
-
+        if (document.getElementById("search-user-id") != null) {
+            founduserwall.innerHTML = "";
+        }
         founduser = serverstub.getUserDataByEmail(token,  document.getElementById("search-user-input").value);
-        founduser = founduser.data;
+        if(founduser.success == false){
+            // TODO : Display error
+        }else{
+            founduser = founduser.data;
         profilearea = document.createElement("div");
         profilearea.setAttribute("class", "col-md-2 side-panel");
+        profilearea.setAttribute("id", "search-user-id");
         profilearea.innerHTML =
                 "<div class='title-sign'> Profile </div>" +
                 "<div class='container'> " +
@@ -230,6 +235,8 @@ function displayProfileView(){
                 "<div>"+ messageUser + "</div>";
         founduserwall.appendChild(profilearea);
         founduserwall.appendChild(wallarea);
+        }
+
     });
 
 

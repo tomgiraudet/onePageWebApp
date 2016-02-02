@@ -200,26 +200,86 @@ function displayProfileView(){
     console.log(user);
 
     mailAddressUser = userinformation.email;
-     firstNameUser = userinformation.firstname;
-     familyNameUser = userinformation.familyname;
-     sexUser = userinformation.gender;
-     cityUser = userinformation.city;
-     countryUser = userinformation.country;
+    firstNameUser = userinformation.firstname;
+    familyNameUser = userinformation.familyname;
+    sexUser = userinformation.gender;
+    cityUser = userinformation.city;
+    countryUser = userinformation.country;
 
     document.getElementById("profil_username").innerHTML = mailAddressUser;
-     document.getElementById("profil_first_name").innerHTML = firstNameUser;
-     document.getElementById("profil_family_name").innerHTML = familyNameUser;
-     document.getElementById("profil_sex").innerHTML = sexUser;
-     document.getElementById("profil_city").innerHTML = cityUser;
-     document.getElementById("profil_country").innerHTML = countryUser;
+    document.getElementById("profil_first_name").innerHTML = firstNameUser;
+    document.getElementById("profil_family_name").innerHTML = familyNameUser;
+    document.getElementById("profil_sex").innerHTML = sexUser;
+    document.getElementById("profil_city").innerHTML = cityUser;
+    document.getElementById("profil_country").innerHTML = countryUser;
+
+    // Share button
+    btnShare = document.getElementById("btn-share");
+
+    btnShare.setAttribute("onclick", "return false;");  // make the page not refresh
+    btnShare.addEventListener("click", function() {
+        console.log("shared button hit");
+        var content = document.getElementById("comment").value;
+        var destination = document.getElementById("destination").value;
+
+        console.log(destination);
+        if(destination == ""){
+            // Post on my own wall
+            res = serverstub.postMessage(token, content);
+            eraseErrorShare();
+            displaySuccessShare(res.message);
+            console.log("posted on my own wall");
+            document.getElementById("comment").value = "";
+        }else {
+            // Post to someone else's wall
+            res = serverstub.postMessage(token, content, destination);
+            if (res.message = "No such user.") {
+                // Unknown user
+                displayErrorShare(res.message);
+            } else {
+                if (res.message = "You are not signed in.") {
+                    displayErrorShare(res.message);
+                } else {
+                    eraseErrorShare();
+                    displaySuccessShare(res.message);
+                    console.log("posted on an other wall");
+                    document.getElementById("comment").value = "";
+                }
+            }
+        }
+
+        return false;
+
+    });
 
 
-
-    // refresh button of newsfeed :
+    // Refresh button of newsfeed :
     document.getElementById("btn-refresh").addEventListener("click", function(){
         content = document.getElementById("newsfeed");
         $("#newsfeed").load(content);
     });
+
+    // Display message on Home page
+    var msg = serverstub.getUserMessagesByToken(token);
+    var template = $(".message.hidden");
+
+
+    if(msg.success){
+        console.log(msg.data);
+        msg.data.forEach(function (message){
+            var msg = template.clone().removeClass("hidden");
+            console.log(message.content);
+            console.log(msg);
+            div = document.createElement("div");
+            div.setAttribute("class", "panel-body content-message");
+            div.innerHTML = message.content;
+            msg.append(div);
+            $("#newsfeed").append(msg);
+        });
+    }else{
+        //TODO : check the response to display the good error message
+    }
+
 }
 
 function changeProfileToWelcome(){
@@ -292,5 +352,31 @@ function displayErrorSignIn(res) {
         document.getElementById("up-password-form").setAttribute("class", "input-form");
         document.getElementById("up-name-form").setAttribute("class", "input-form");
         document.getElementById("up-address-form").setAttribute("class", "input-form");
+    }
+}
+
+function displayErrorShare(msg){
+
+    if(document.getElementById("share-error") == null){
+        var errorlabel = document.createElement("label");
+        errorlabel.setAttribute("class", "label label-danger");
+        errorlabel.setAttribute("id", "share-error");
+        errorlabel.innerText = msg;
+        document.getElementById("error-area-share").appendChild(errorlabel);
+    }
+
+}
+
+function displaySuccessShare(msg){
+    var successlabel = document.createElement("label");
+    successlabel.setAttribute("class", "label label-success");
+    successlabel.setAttribute("id", "share-error");
+    successlabel.innerText = msg;
+    document.getElementById("error-area-share").appendChild(successlabel);
+}
+
+function eraseErrorShare(){
+    if(document.getElementById("share-error") != null){
+        document.getElementById("share-error").removeChild(document.getElementById("share-error"));
     }
 }

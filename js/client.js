@@ -256,14 +256,13 @@ function displayProfileView(){
     // Refresh button of newsfeed :
     document.getElementById("btn-refresh").addEventListener("click", function(){
         content = document.getElementById("newsfeed");
-        $("#newsfeed").load(content);
+        content.empty();
+
     });
 
     // Display message on Home page
     var msg = serverstub.getUserMessagesByToken(token);
     var template = $(".message.hidden");
-
-
     if(msg.success){
         console.log(msg.data);
         msg.data.forEach(function (message){

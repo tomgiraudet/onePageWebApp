@@ -156,7 +156,6 @@ function displayProfileView(){
 
         if ((oldpassword != "") && (newpassword != "")) {
             msg = serverstub.changePassword(token, oldpassword, newpassword);
-            console.log(msg);
 
             if (msg.success) {
                 // Display valid message
@@ -168,7 +167,7 @@ function displayProfileView(){
                 accountvalidlabel.setAttribute("id", "change-password-valid");
                 accountvalidlabel.style.marginLeft = "15px";
                 accountvalidlabel.innerText = "Your password is changed";
-                document.getElementById("response-area-account").appendChild(accountvalidlabel);
+                if(document.getElementById("change-password-valid") == null) document.getElementById("response-area-account").appendChild(accountvalidlabel);
 
             }else{
                 displayErrorChangePassword(msg.message);
@@ -194,42 +193,63 @@ function displayProfileView(){
     var founduser;
     var founduserwall = document.getElementById("user-wall-area");
     searchuserbtn.addEventListener("click", function(){
+        if (document.getElementById("search-user-id") != null) {
+            founduserwall.innerHTML = "";
+        }
+        searchmail = document.getElementById("search-user-input").value;
+        founduser = serverstub.getUserDataByEmail(token,  searchmail);
+        if(founduser.success == false){
+            // TODO : Display error
+        }else{
+            founduser = founduser.data;
+            profilearea = document.createElement("div");
+            profilearea.setAttribute("class", "col-md-4 side-panel");
+            profilearea.setAttribute("id", "search-user-id");
 
+            profilearea.innerHTML =
+                "<div class='title-sign'> Profile </div>" +
+                "<div class='container'> " +
+                "<dl>" +
+                "<dt>Username : </dt>" +
+                "<div id='profil_username'>"+ founduser.email +"</div>" +
+                "<br>" +
+                "<dt>First name : </dt>" +
+                "<div id='profil_first_name'>"+ founduser.firstname +"</div>" +
+                "<br>" +
+                "<dt>Name : </dt>" +
+                "<div id='profil_family_name'>"+ founduser.familyname + "</div>" +
+                "<br>" +
+                "<dt>Sex : </dt>" +
+                "<div id='profil_sex'>"+ founduser.gender + "</div>" +
+                "<br>" +
+                "<dt>City :</dt>" +
+                "<div id='profil_city'>"+ founduser.city + "</div>" +
+                "<br>" +
+                "<dt>Country :</dt>" +
+                "<div id='profil_country'>"+ founduser.country + "</div>" +
+                "</dl>" +
+                "</div>";
 
-        founduser = serverstub.getUserDataByEmail(token,  document.getElementById("search-user-input").value);
-        founduser = founduser.data;
-        profilearea = document.createElement("div");
-        profilearea.setAttribute("class", "col-md-2 side-panel");
-        profilearea.innerHTML =
-            "<div class='title-sign'> Profile </div>" +
-            "<div class='container'> " +
-            "<dl>" +
-            "<dt>Username : </dt>" +
-            "<div id='profil_username'>"+ founduser.email +"</div>" +
-            "<br>" +
-            "<dt>First name : </dt>" +
-            "<div id='profil_first_name'>"+ founduser.firstname +"</div>" +
-            "<br>" +
-            "<dt>Name : </dt>" +
-            "<div id='profil_family_name'>"+ founduser.familyname + "</div>" +
-            "<br>" +
-            "<dt>Sex : </dt>" +
-            "<div id='profil_sex'>"+ founduser.gender + "</div>" +
-            "<br>" +
-            "<dt>City :</dt>" +
-            "<div id='profil_city'>"+ founduser.city + "</div>" +
-            "<br>" +
-            "<dt>Country :</dt>" +
-            "<div id='profil_country'>"+ founduser.country + "</div>" +
-            "</dl>" +
-            "</div>";
+            wallarea = document.createElement("div");
+            wallarea.setAttribute("class", "panel panel-default col-xs-8");
+            wallarea.setAttribute("id", "search-user-wall");
+            wallarea.innerHTML = "<div class='panel-heading'>" +
+                "<h3 class='panel-title'>News feed : <button id='btn-refresh-wall'><span class='glyphicon glyphicon-refresh' aria-hidden='true'></span></button></h3>" +
+                "</div>" +
+                "<div id='wall-user'>" +
+                "<div class='wall panel panel-default hidden'></div>" +
+                "</div>";
 
-        wallarea = document.createElement("div");
-        messageUser = (serverstub.getUserMessagesByEmail(token,  document.getElementById("search-user-input").value)).data;
-        wallarea.innerHTML = "<div class='title-sign'> Wall </div>"+
-            "<div>"+ messageUser + "</div>";
-        founduserwall.appendChild(profilearea);
-        founduserwall.appendChild(wallarea);
+            console.log("search people : " + searchmail);
+            messageUser = (serverstub.getUserMessagesByEmail(token, searchmail));
+            console.log(messageUser.data);
+
+            founduserwall.appendChild(profilearea);
+            founduserwall.appendChild(wallarea);
+
+            displayMessageBrowserPage(messageUser);
+        }
+
     });
 
 
@@ -271,18 +291,13 @@ function displayProfileView(){
         }else {
             // Post to someone else's wall
             res = serverstub.postMessage(token, content, destination);
-            if (res.message = "No such user.") {
-                // Unknown user
+            if(res.success == false){
                 displayErrorShare(res.message);
             } else {
-                if (res.message = "You are not signed in.") {
-                    displayErrorShare(res.message);
-                } else {
-                    eraseErrorShare();
-                    displaySuccessShare(res.message);
-                    console.log("posted on an other wall");
-                    document.getElementById("comment").value = "";
-                }
+                eraseErrorShare();
+                displaySuccessShare(res.message);
+                console.log("posted on an other wall");
+                document.getElementById("comment").value = "";
             }
         }
 
@@ -302,9 +317,7 @@ function displayProfileView(){
 
         // Reload
         var token = Object.keys(JSON.parse(localStorage.getItem("loggedinusers")));
-        console.log(token)
         var msg = serverstub.getUserMessagesByToken(token);
-        console.log(msg)
         displayMessageHomePage(msg);
     });
 
@@ -379,9 +392,7 @@ function displayErrorSignIn(res) {
 
 
 function displayMessageHomePage(msg){
-    console.log("Displaying message");
     var template = $(".message.hidden");
-    console.log(template);
     if(msg.success){
         msg.data.forEach(function (message){
             var msg = template.clone().removeClass("hidden");
@@ -393,6 +404,22 @@ function displayMessageHomePage(msg){
         });
     }
 }
+
+function displayMessageBrowserPage(msg){
+    var template = $(".wall.hidden");
+    if(msg.success){
+        msg.data.forEach(function (message){
+            console.log("message user " + message.content);
+            var msg = template.clone().removeClass("hidden");
+            div = document.createElement("div");
+            div.setAttribute("class", "panel-body content-message");
+            div.innerHTML = message.content;
+            msg.append(div);
+            $("#wall-user").append(msg);
+        });
+    }
+}
+
 
 function displayErrorShare(msg){
     if(document.getElementById("share-error") == null){

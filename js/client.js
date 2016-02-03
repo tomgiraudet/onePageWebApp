@@ -393,6 +393,7 @@ function displayMessageHomePage(msg){
         });
     }
 }
+
 function displayErrorShare(msg){
     if(document.getElementById("share-error") == null){
         var errorlabel = document.createElement("label");

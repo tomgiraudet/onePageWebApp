@@ -240,9 +240,7 @@ function displayProfileView(){
                 "<div class='wall panel panel-default hidden'></div>" +
                 "</div>";
 
-            console.log("search people : " + searchmail);
             messageUser = (serverstub.getUserMessagesByEmail(token, searchmail));
-            console.log(messageUser.data);
 
             founduserwall.appendChild(profilearea);
             founduserwall.appendChild(wallarea);
@@ -276,17 +274,14 @@ function displayProfileView(){
 
     btnShare.setAttribute("onclick", "return false;");  // make the page not refresh
     btnShare.addEventListener("click", function() {
-        console.log("shared button hit");
         var content = document.getElementById("comment").value;
         var destination = document.getElementById("destination").value;
 
-        console.log(destination);
         if(destination == ""){
             // Post on my own wall
             res = serverstub.postMessage(token, content);
             eraseErrorShare();
             displaySuccessShare(res.message);
-            console.log("posted on my own wall");
             document.getElementById("comment").value = "";
         }else {
             // Post to someone else's wall
@@ -296,7 +291,6 @@ function displayProfileView(){
             } else {
                 eraseErrorShare();
                 displaySuccessShare(res.message);
-                console.log("posted on an other wall");
                 document.getElementById("comment").value = "";
             }
         }
@@ -357,7 +351,7 @@ function displayErrorSignUp(msg){
         errorlabel.setAttribute("id", "signup-error");
         errorlabel.innerText = msg;
     }else{
-        document.getElementById("signup-error").innerHTML(msg);
+        document.getElementById("signup-error").innerHTML= msg ;
     }
 
     document.getElementById("error-area-signup").appendChild(errorlabel);
@@ -409,7 +403,6 @@ function displayMessageBrowserPage(msg){
     var template = $(".wall.hidden");
     if(msg.success){
         msg.data.forEach(function (message){
-            console.log("message user " + message.content);
             var msg = template.clone().removeClass("hidden");
             div = document.createElement("div");
             div.setAttribute("class", "panel-body content-message");
@@ -433,7 +426,10 @@ function displayErrorShare(msg){
 }
 
 function displaySuccessShare(msg){
-    var successlabel = document.createElement("label");
+    if(document.getElementById("share-error") != null){
+        document.getElementById("share-error").remove();
+    }
+        var successlabel = document.createElement("label");
     successlabel.setAttribute("class", "label label-success");
     successlabel.setAttribute("id", "share-error");
     successlabel.innerText = msg;

@@ -46,3 +46,12 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+# Virtualenv
+.Python
+bin
+lib
+include
+
+# Mac OS X custom attribute files
+.DS_Store

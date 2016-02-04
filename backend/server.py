@@ -9,7 +9,7 @@ app = Flask(__name__)
 def index():
     return "Hello ! :)"
 
-
+# tested
 @app.route('/sign_in/<email>/<password>')
 def sign_in(email, password):
     result = database_helper.user_exists(email=email, password=password)
@@ -21,22 +21,19 @@ def sign_in(email, password):
 
 
 
-
+# tested
 @app.route('/sign_up/<email>/<password>/<firstname>/<familyname>/<gender>/<city>/<country>')
 def sign_up(email, password, firstname, familyname, gender, city, country):
-    alreadyexists = database_helper.user_exists(email=email, password=password)
-    if alreadyexists:
+    exists = database_helper.user_exists(email=email, password=password)
+    if exists == 'true':
         return json.dumps({'success': 'false', 'message': 'User already exists', 'data': ''})
     else:
-        result = database_helper.insert_user(email, password, firstname, familyname, gender, city, country)
+        password = str(password)
+        result = json.loads(database_helper.insert_user(email, password, firstname, familyname, gender, city, country))
         if result['success']:
             return json.dumps({'success': 'true', 'message': result['message'], 'data': ''})
         else:
             return json.dumps({'success': 'false', 'message': result['message'], 'data': ''})
-
-
-#http://127.0.0.1:5000/sign_up/tom@outlook.com/123456/Tom/Giraudet/male/Nantes/France
-
 
 
 @app.route('/sign_out/<token>')

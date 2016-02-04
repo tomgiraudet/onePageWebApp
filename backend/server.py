@@ -66,17 +66,17 @@ def get_user_data_by_email(token, email):
 
 @app.route('/get_user_messages_by_token/<token>')
 def get_user_messages_by_token(token):
-    return 'get user messages by token'
+    return database_helper.get_user_messages_by_token(token=token)
 
 
 @app.route('/get_user_messages_by_email/<token>/<email>')
 def get_user_messages_by_email(token, email):
-    return 'get user messages by email'
+    return database_helper.get_user_messages_by_email(token=token, email=email)
 
 
 @app.route('/post_message/<token>/<message>/<email>')
 def post_message(token, message, email):
-    return 'post message'
+    return database_helper.post_message(token=token, message=message, email=email)
 
 
 

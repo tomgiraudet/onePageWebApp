@@ -9,7 +9,8 @@ app = Flask(__name__)
 def index():
     return "Hello ! :)"
 
-# tested
+
+#tested
 @app.route('/sign_in/<email>/<password>')
 def sign_in(email, password):
     result = database_helper.user_exists(email=email, password=password)
@@ -20,8 +21,7 @@ def sign_in(email, password):
         return json.dumps({'success': 'false', 'message': 'User is not in the database', 'data': ''})
 
 
-
-# tested
+#tested
 @app.route('/sign_up/<email>/<password>/<firstname>/<familyname>/<gender>/<city>/<country>')
 def sign_up(email, password, firstname, familyname, gender, city, country):
     exists = database_helper.user_exists(email=email, password=password)

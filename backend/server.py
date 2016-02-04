@@ -13,7 +13,9 @@ def index():
 def sign_in(email, password):
     #binascii.b2a_hex(os.urandom(15))
     result = database_helper.signin_user(email=email, password=password)
-    return 'Hello :' + result
+    success = 'true'
+
+    return json.dumps({'success': success, 'message': 'Everything went great', 'data': result})
 
 
 

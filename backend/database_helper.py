@@ -1,13 +1,17 @@
 from flask import g
+import json
 import sqlite3
 
 DATABASE = '/Users/juliettegonzalez/PycharmProjects/onePageWebApp/backend/database.db'
 
+
 def connect_db():
     return sqlite3.connect(DATABASE)
 
+
 def close_db():
     get_db().close()
+
 
 def get_db():
     db = getattr(g, 'db', None)
@@ -15,10 +19,24 @@ def get_db():
         db = g._database = connect_db()
     return db
 
-def signin_user(email, password):
+
+def user_exists(email, password):
     db = get_db()
     cursor = db.cursor()
     cursor.execute("SELECT email, password from users WHERE email='" + email + "' AND password='" + password +"'")
-    users = [dict(email=row[0], password=row[1]) for row in cursor.fetchall()]
     close_db()
-    return users[0]['email'] + " password: " + users[0]['password']
+    if cursor.fetchone():
+        return "true"
+    else:
+        return "false"
+
+
+def insert_user(email, password, firstname, familyname, gender, city, country):
+    db = get_db()
+    try:
+        db.execute("INSERT INTO users VALUES (email, password, firstname, familyname, gender, city, country)")
+        db.commit()
+        close_db()
+    except sqlite3.OperationalError, msg:
+        return json.dumps({'success': 'false', 'message': msg})
+    return json.dumps({'success': 'true', 'message': 'User added in the database'})

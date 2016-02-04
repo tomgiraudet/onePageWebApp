@@ -10,37 +10,51 @@ def index():
     return "Hello ! :)"
 
 
-#tested
+#test : ok
 @app.route('/sign_in/<email>/<password>')
 def sign_in(email, password):
     result = database_helper.user_exists(email=email, password=password)
     if result == 'true':
-        token = binascii.b2a_hex(os.urandom(15))
-        return json.dumps({'success': 'true', 'message': 'User is in the database', 'data': token})
+            return connect(email)
     else:
         return json.dumps({'success': 'false', 'message': 'User is not in the database', 'data': ''})
 
 
-#tested
+#test : ok
 @app.route('/sign_up/<email>/<password>/<firstname>/<familyname>/<gender>/<city>/<country>')
 def sign_up(email, password, firstname, familyname, gender, city, country):
     exists = database_helper.user_exists(email=email, password=password)
     if exists == 'true':
         return json.dumps({'success': 'false', 'message': 'User already exists', 'data': ''})
     else:
-        password = str(password)
         result = json.loads(database_helper.insert_user(email, password, firstname, familyname, gender, city, country))
-        if result['success']:
-            return json.dumps({'success': 'true', 'message': result['message'], 'data': ''})
+        # user added to the database
+        if result['success'] == 'true':
+            return connect(email)
+        # user hasn't been added
         else:
             return json.dumps({'success': 'false', 'message': result['message'], 'data': ''})
+
+
+# connect a user
+def connect(email):
+    if database_helper.user_logged(email) == 'false':
+        token = binascii.b2a_hex(os.urandom(15))
+        logged = json.loads(database_helper.add_logged_user(token=token, email=email))
+        if logged['success'] == 'true':
+            return json.dumps({'success': 'true', 'message': 'User is logged', 'data': token})
+        else:
+            return json.dumps({'success': 'false', 'message': logged['message'], 'data': ''})
+    else:
+        return json.dumps({'success': 'false', 'message': 'User already connected', 'data': ''})
+
 
 
 @app.route('/sign_out/<token>')
 def sign_out(token):
     result = database_helper.sign_out(token=token)
     success = result.success
-    if success:
+    if success == 'true':
         return json.dumps({'success' : success, 'message': 'User unlogged'})
     else:
         return json.dumps({'success' : success, 'message': 'Failed to unlogged user'})

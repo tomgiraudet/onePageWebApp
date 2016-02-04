@@ -31,6 +31,30 @@ def user_exists(email, password):
         return "false"
 
 
+# Check if the user is already logged
+def user_logged(email):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT email from loggedUser WHERE email='" + email + "'")
+    close_db()
+    if cursor.fetchone():
+        return "true"
+    else:
+        return "false"
+
+
+def add_logged_user(token, email):
+    db = get_db()
+    try:
+        db.execute("INSERT INTO loggedUser VALUES (?, ?)", (token, email))
+        db.commit()
+        close_db()
+    except sqlite3.OperationalError, msg:
+        return json.dumps({'success': 'false', 'message': msg})
+    return json.dumps({'success': 'true', 'message': 'User added in the logged database'})
+
+
+
 def insert_user(email, password, firstname, familyname, gender, city, country):
     db = get_db()
     try:
@@ -94,7 +118,7 @@ def get_user_messages_by_token(token):
         email = loggedUser[0]['email']
         cursor.execute("SELECT * from message WHERE fromEmail='" + email + "'")
         messages = [dict(id=row[0], fromEmail=row[1], toEmail=row[2], content=row[3]) for row in cursor.fetchall()]
-        if message.fetchone():
+        if messages.fetchone():
             messagesJson = json.dumps(messages, separators=(',', ':'), sort_keys=True)
             return json.dumps({'success': 'true', 'message': 'Messages transfered', 'data': messagesJson})
         else:
@@ -111,7 +135,7 @@ def get_user_messages_by_email(token, email):
     if cursor.fetchone() :
         cursor.execute("SELECT * from message WHERE fromEmail='" + email + "'")
         messages = [dict(id=row[0], fromEmail=row[1], toEmail=row[2], content=row[3]) for row in cursor.fetchall()]
-        if message.fetchone():
+        if messages.fetchone():
             messagesJson = json.dumps(messages, separators=(',', ':'), sort_keys=True)
             return json.dumps({'success': 'true', 'message': 'Messages transfered', 'data': messagesJson})
         else:

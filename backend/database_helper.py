@@ -34,7 +34,7 @@ def user_exists(email, password):
 def insert_user(email, password, firstname, familyname, gender, city, country):
     db = get_db()
     try:
-        db.execute("INSERT INTO users VALUES (email, password, firstname, familyname, gender, city, country)")
+        db.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?)", (email, password, firstname, familyname, gender, city, country))
         db.commit()
         close_db()
     except sqlite3.OperationalError, msg:

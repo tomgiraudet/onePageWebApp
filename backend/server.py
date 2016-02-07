@@ -10,7 +10,8 @@ def index():
     return "Hello ! :)"
 
 
-#test : ok
+# Authenticates the username by the provided password
+# Tested : V
 @app.route('/sign_in/<email>/<password>')
 def sign_in(email, password):
     result = database_helper.user_exists(email=email, password=password)
@@ -20,7 +21,8 @@ def sign_in(email, password):
         return json.dumps({'success': 'false', 'message': 'User is not in the database', 'data': ''})
 
 
-#test : ok
+# Registers a user in the database.
+# tested : V
 @app.route('/sign_up/<email>/<password>/<firstname>/<familyname>/<gender>/<city>/<country>')
 def sign_up(email, password, firstname, familyname, gender, city, country):
     exists = database_helper.user_exists(email=email, password=password)
@@ -36,7 +38,8 @@ def sign_up(email, password, firstname, familyname, gender, city, country):
             return json.dumps({'success': 'false', 'message': result['message'], 'data': ''})
 
 
-# connect a user
+# Connect a user
+# Tested : V
 def connect(email):
     if database_helper.user_logged(email) == 'false':
         token = binascii.b2a_hex(os.urandom(15))
@@ -49,7 +52,8 @@ def connect(email):
         return json.dumps({'success': 'false', 'message': 'User already connected', 'data': ''})
 
 
-
+# Signs out a user from the system
+# Tested : V
 @app.route('/sign_out/<token>')
 def sign_out(token):
     logged = database_helper.user_logged_by_token(token=token)
@@ -64,33 +68,49 @@ def sign_out(token):
         return json.dumps({'success' : 'true', 'message': 'User already logged out or nonexistent'})
 
 
+# Changes the password of the current user to a new one.
+# A VERIFIER: rend wrong parfois alors que le mot de passe change
 @app.route('/change_password/<token>/<old>/<new>')
 def change_password(token, old, new):
     # check if the user is logged
     logged = database_helper.user_logged_by_token(token=token)
-    size = len(new)         # maybe not necessary
     if logged == 'true':
-        if size > 5:
-            return database_helper.change_password(token=token, old_password=old, new_password=new)
-        else:
-            return json.dumps({'success' : 'false', 'message': 'New password too short'})
+        return database_helper.change_password(token=token, old_password=old, new_password=new)
     else:
         return json.dumps({'success' : 'false', 'message': 'User not logged'})
 
 
+# Retrieves the stored data for the user logged with the token
+# Tested : V
 @app.route('/get_user_data_by_token/<token>')
 def get_user_data_by_token(token):
-    return database_helper.get_user_data_by_token(token=token)
+    logged = database_helper.user_logged_by_token(token=token)
+    if logged == 'true':
+        return database_helper.get_user_data_by_token(token=token)
+    else:
+        return json.dumps({'success': 'false', 'message': 'User not logged', 'data': []})
 
 
+# Retrieves the stored data for the user specified by the passed email address
+# Tested : V
 @app.route('/get_user_data_by_email/<token>/<email>')
 def get_user_data_by_email(token, email):
-    return database_helper.get_user_data_by_email(token=token, email=email)
+    logged = database_helper.user_logged_by_token(token=token)
+    if logged == 'true':
+        return database_helper.get_user_data_by_email(email=email)
+    else:
+        return json.dumps({'success': 'false', 'message': 'User not logged', 'data': []})
 
 
+# Retrieves the stored messages for the user logged with the token
+# Tested :
 @app.route('/get_user_messages_by_token/<token>')
 def get_user_messages_by_token(token):
-    return database_helper.get_user_messages_by_token(token=token)
+    logged = database_helper.user_logged_by_token(token=token)
+    if logged == 'true':
+        return database_helper.get_user_messages_by_token(token=token)
+    else:
+        return json.dumps({'success': 'false', 'message': 'User not logged', 'data': []})
 
 
 @app.route('/get_user_messages_by_email/<token>/<email>')

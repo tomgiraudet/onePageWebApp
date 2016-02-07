@@ -56,7 +56,6 @@ def user_logged_by_token(token):
 
 
 
-
 def add_logged_user(token, email):
     db = get_db()
     try:
@@ -98,10 +97,8 @@ def change_password(token, old_password, new_password):
     cursor = db.cursor()
     cursor.execute("SELECT password FROM users INNER JOIN loggedUser ON users.email=loggedUser.email WHERE loggedUser.token ='"+ token +"'")
     db_password = cursor.fetchone()[0]
-
     cursor.execute("SELECT email FROM loggedUser WHERE token ='"+ token +"'")
     email = cursor.fetchone()[0]
-
     if db_password == old_password:
         cursor.execute("UPDATE users SET password='"+ new_password +"' WHERE email='"+ email +"'")
         db.commit()
@@ -112,51 +109,39 @@ def change_password(token, old_password, new_password):
 
 
 
-def get_info_by_token(token, information):
-    db = get_db()
-    cursor = db.cursor()
-    cursor.execute("SELECT "+ information +" FROM users INNER JOIN loggedUser ON users.email=loggedUser.email WHERE loggedUser.token ='"+ token +"'")
-    close_db()
-    return cursor.fetchone()[0]
-
-
-
-
 def get_user_data_by_token(token):
     db = get_db()
     cursor = db.cursor()
-    cursor.execute("SELECT * from loggedUser WHERE token='" + token + "'")
-
-    if cursor.fetchone() :
-        loggedUser = [dict(token=row[0], email=row[1]) for row in cursor.fetchall()]
-        email = loggedUser[0]['email']
-        cursor.execute("SELECT * from users WHERE email='" + email + "'")
-        users = [dict(email=row[0], password=row[1], firstname=row[2], familyname=row[3], gender=row[4], city=row[5], country=row[6]) for row in cursor.fetchall()]
-        close_db()
-        return json.dumps({'success': 'true', 'message': 'Data transfered', 'data': {'email': users[0]['email'], 'password': users[0]['password'], 'firstname': users[0]['firstname'], 'familyname': users[0]['familyname'], 'gender': users[0]['gender'], 'city': users[0]['city'], 'country': users[0]['country']}})
-    else:
-        return json.dumps({'success': 'false', 'message': 'User unknown', 'data' : 'error'})
+    cursor.execute("SELECT * FROM users INNER JOIN loggedUser ON users.email=loggedUser.email WHERE loggedUser.token ='"+ token +"'")
+    user_data = cursor.fetchone()
+    close_db()
+    return json.dumps({'success': 'true', 'message': 'Data transfered', 'data': {'email': user_data[0], 'firstname': user_data[2], 'familyname': user_data[3], 'gender': user_data[4], 'city': user_data[5], 'country': user_data[6]}})
 
 
-def get_user_data_by_email(token, email):
+
+def get_user_data_by_email(email):
     db = get_db()
     cursor = db.cursor()
-    cursor.execute("SELECT * from loggedUser WHERE token='" + token + "'")
+    cursor.execute("SELECT * from users WHERE email='" + email + "'")
+    user_data = cursor.fetchone()
+    close_db()
+    return json.dumps({'success': 'true', 'message': 'Data transfered', 'data': {'email': user_data[0], 'firstname': user_data[2], 'familyname': user_data[3], 'gender': user_data[4], 'city': user_data[5], 'country': user_data[6]}})
 
-    if cursor.fetchone() :
-        cursor.execute("SELECT * from users WHERE email='" + email + "'")
-        users = [dict(email=row[0], password=row[1], firstname=row[2], familyname=row[3], gender=row[4], city=row[5], country=row[6]) for row in cursor.fetchall()]
-        close_db()
-        return json.dumps({'success': 'true', 'message': 'Data transfered', 'data': {'email': users[0]['email'], 'password': user[0]['password'], 'firstname': user[0]['firstname'], 'familyname': user[0]['familyname'], 'gender': user[0]['gender'], 'city': user[0]['city'], 'country': user[0]['country']}})
-    else:
-        return json.dumps({'success': 'false', 'message': 'User unknown', 'data' : 'error'})
 
 
 def get_user_messages_by_token(token):
     db = get_db()
     cursor = db.cursor()
-    cursor.execute("SELECT * from loggedUser WHERE token='" + token + "'")
+    cursor.execute("SELECT email FROM loggedUser WHERE token ='"+ token +"'")
+    email = cursor.fetchone()[0]
+    cursor.execute("SELECT fromEmail, content FROM messages WHERE toEmail ='"+ email +"'")
+    users_messages = cursor.fetchall()
 
+    for message in users_messages:
+        post = json.dumps({'fromEmail' : message[0], 'content': message[1]})
+        return post
+
+''''
     if cursor.fetchone() :
         loggedUser = [dict(token=row[0], email=row[1]) for row in cursor.fetchall()]
         email = loggedUser[0]['email']
@@ -169,6 +154,7 @@ def get_user_messages_by_token(token):
             return json.dumps({'success': 'false', 'message': 'No message found for this person', 'data': 'error'})
     else:
         return json.dumps({'success': 'false', 'message': 'User unknown', 'data' : 'error'})
+        '''''
 
 
 def get_user_messages_by_email(token, email):
@@ -186,6 +172,8 @@ def get_user_messages_by_email(token, email):
             return json.dumps({'success': 'false', 'message': 'No message found for this person', 'data': 'error'})
     else:
         return json.dumps({'success': 'false', 'message': 'User unknown', 'data' : 'error'})
+
+
 
 def post_message(token, message, email):
     db = get_db()

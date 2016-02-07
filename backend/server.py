@@ -52,17 +52,30 @@ def connect(email):
 
 @app.route('/sign_out/<token>')
 def sign_out(token):
-    result = database_helper.sign_out(token=token)
-    success = result.success
-    if success == 'true':
-        return json.dumps({'success' : success, 'message': 'User unlogged'})
+    logged = database_helper.user_logged_by_token(token=token)
+
+    if logged == 'true':
+        out = database_helper.sign_out(token=token)
+        if out == 'true':
+            return json.dumps({'success' : 'true', 'message': 'User unlogged'})
+        else:
+            return json.dumps({'success' : 'false', 'message': 'Failed to unlogged user'})
     else:
-        return json.dumps({'success' : success, 'message': 'Failed to unlogged user'})
+        return json.dumps({'success' : 'true', 'message': 'User already logged out or nonexistent'})
 
 
 @app.route('/change_password/<token>/<old>/<new>')
 def change_password(token, old, new):
-    return 'change_password'
+    # check if the user is logged
+    logged = database_helper.user_logged_by_token(token=token)
+    size = len(new)         # maybe not necessary
+    if logged == 'true':
+        if size > 5:
+            return database_helper.change_password(token=token, old_password=old, new_password=new)
+        else:
+            return json.dumps({'success' : 'false', 'message': 'New password too short'})
+    else:
+        return json.dumps({'success' : 'false', 'message': 'User not logged'})
 
 
 @app.route('/get_user_data_by_token/<token>')

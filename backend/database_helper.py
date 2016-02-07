@@ -31,7 +31,7 @@ def user_exists(email, password):
         return "false"
 
 
-# Check if the user is already logged
+# Check if the user is already logged with email id
 def user_logged(email):
     db = get_db()
     cursor = db.cursor()
@@ -43,15 +43,29 @@ def user_logged(email):
         return "false"
 
 
+# Check if the user is already logged with token id
+def user_logged_by_token(token):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT email from loggedUser WHERE token='" + token + "'")
+    close_db()
+    if cursor.fetchone():
+        return "true"
+    else:
+        return "false"
+
+
+
+
 def add_logged_user(token, email):
     db = get_db()
     try:
         db.execute("INSERT INTO loggedUser VALUES (?, ?)", (token, email))
         db.commit()
         close_db()
+        return json.dumps({'success': 'true', 'message': 'User added in the logged database'})
     except sqlite3.OperationalError, msg:
         return json.dumps({'success': 'false', 'message': msg})
-    return json.dumps({'success': 'true', 'message': 'User added in the logged database'})
 
 
 
@@ -69,13 +83,43 @@ def insert_user(email, password, firstname, familyname, gender, city, country):
 def sign_out(token):
     db = get_db()
     cursor = db.cursor()
-    cursor.execute("SELECT * from loggedUser WHERE token='" + token + "'")
-
-    if cursor.fetchone() :
+    try:
         cursor.execute("DELETE from loggedUser WHERE token='" + token + "'")
-        return "true"
+        db.commit()
+        close_db()
+        return 'true'
+    except sqlite3.OperationalError, msg:
+        return 'false'
+
+
+# change password
+def change_password(token, old_password, new_password):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT password FROM users INNER JOIN loggedUser ON users.email=loggedUser.email WHERE loggedUser.token ='"+ token +"'")
+    db_password = cursor.fetchone()[0]
+
+    cursor.execute("SELECT email FROM loggedUser WHERE token ='"+ token +"'")
+    email = cursor.fetchone()[0]
+
+    if db_password == old_password:
+        cursor.execute("UPDATE users SET password='"+ new_password +"' WHERE email='"+ email +"'")
+        db.commit()
+        close_db()
+        return json.dumps({'success': 'true', 'message': 'Password changed'})
     else:
-        return "false"
+        return json.dumps({'success': 'false', 'message': 'Wrong password'})
+
+
+
+def get_info_by_token(token, information):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT "+ information +" FROM users INNER JOIN loggedUser ON users.email=loggedUser.email WHERE loggedUser.token ='"+ token +"'")
+    close_db()
+    return cursor.fetchone()[0]
+
+
 
 
 def get_user_data_by_token(token):
@@ -89,7 +133,7 @@ def get_user_data_by_token(token):
         cursor.execute("SELECT * from users WHERE email='" + email + "'")
         users = [dict(email=row[0], password=row[1], firstname=row[2], familyname=row[3], gender=row[4], city=row[5], country=row[6]) for row in cursor.fetchall()]
         close_db()
-        return json.dumps({'success': 'true', 'message': 'Data transfered', 'data': {'email': users[0]['email'], 'password': user[0]['password'], 'firstname': user[0]['firstname'], 'familyname': user[0]['familyname'], 'gender': user[0]['gender'], 'city': user[0]['city'], 'country': user[0]['country']}})
+        return json.dumps({'success': 'true', 'message': 'Data transfered', 'data': {'email': users[0]['email'], 'password': users[0]['password'], 'firstname': users[0]['firstname'], 'familyname': users[0]['familyname'], 'gender': users[0]['gender'], 'city': users[0]['city'], 'country': users[0]['country']}})
     else:
         return json.dumps({'success': 'false', 'message': 'User unknown', 'data' : 'error'})
 

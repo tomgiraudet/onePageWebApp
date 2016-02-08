@@ -10,12 +10,15 @@ def index():
     return "Hello ! :)"
 
 
+# TODO: True instead of 'true'!
+
+
 # Authenticates the username by the provided password
 # Tested : V
 @app.route('/sign_in/<email>/<password>')
 def sign_in(email, password):
-    result = database_helper.user_exists(email=email, password=password)
-    if result == 'true':
+    exist = database_helper.user_exists(email=email, password=password)
+    if exist == 'true':
             return connect(email)
     else:
         return json.dumps({'success': 'false', 'message': 'User is not in the database', 'data': ''})
@@ -103,7 +106,7 @@ def get_user_data_by_email(token, email):
 
 
 # Retrieves the stored messages for the user logged with the token
-# Tested :
+# Tested : V
 @app.route('/get_user_messages_by_token/<token>')
 def get_user_messages_by_token(token):
     logged = database_helper.user_logged_by_token(token=token)

@@ -136,10 +136,14 @@ def get_user_messages_by_token(token):
     email = cursor.fetchone()[0]
     cursor.execute("SELECT fromEmail, content FROM messages WHERE toEmail ='"+ email +"'")
     users_messages = cursor.fetchall()
-
+    array_messages = []
     for message in users_messages:
         post = json.dumps({'fromEmail' : message[0], 'content': message[1]})
-        return post
+        array_messages.append(post)
+    if len(array_messages) == 0:
+        return json.dumps({'success': 'false', 'message': 'No message found for this person', 'data': []})
+    else:
+        return json.dumps({'success': True, 'message': 'Messages transfered', 'data': array_messages})
 
 ''''
     if cursor.fetchone() :

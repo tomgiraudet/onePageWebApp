@@ -27,10 +27,9 @@ def user_in_database(email):
     cursor.execute("SELECT email from users WHERE email='" + email + "'")
     close_db()
     if cursor.fetchone():
-        return "true"
+        return True
     else:
-        return "false"
-
+        return False
 
 
 def user_exists(email, password):
@@ -39,9 +38,9 @@ def user_exists(email, password):
     cursor.execute("SELECT email, password from users WHERE email='" + email + "' AND password='" + password +"'")
     close_db()
     if cursor.fetchone():
-        return "true"
+        return True
     else:
-        return "false"
+        return False
 
 
 # Check if the user is already logged with email id
@@ -51,9 +50,9 @@ def user_logged(email):
     cursor.execute("SELECT email from loggedUser WHERE email='" + email + "'")
     close_db()
     if cursor.fetchone():
-        return "true"
+        return True
     else:
-        return "false"
+        return False
 
 
 # Check if the user is already logged with token id
@@ -63,10 +62,9 @@ def user_logged_by_token(token):
     cursor.execute("SELECT email from loggedUser WHERE token='" + token + "'")
     close_db()
     if cursor.fetchone():
-        return "true"
+        return True
     else:
-        return "false"
-
+        return False
 
 
 def add_logged_user(token, email):
@@ -75,10 +73,9 @@ def add_logged_user(token, email):
         db.execute("INSERT INTO loggedUser VALUES (?, ?)", (token, email))
         db.commit()
         close_db()
-        return json.dumps({'success': 'true', 'message': 'User added in the logged database'})
+        return json.dumps({'success': True, 'message': 'User added in the logged database'})
     except sqlite3.OperationalError, msg:
-        return json.dumps({'success': 'false', 'message': msg})
-
+        return json.dumps({'success': False, 'message': msg})
 
 
 def insert_user(email, password, firstname, familyname, gender, city, country):
@@ -88,8 +85,8 @@ def insert_user(email, password, firstname, familyname, gender, city, country):
         db.commit()
         close_db()
     except sqlite3.OperationalError, msg:
-        return json.dumps({'success': 'false', 'message': msg})
-    return json.dumps({'success': 'true', 'message': 'User added in the database'})
+        return json.dumps({'success': False, 'message': msg})
+    return json.dumps({'success': True, 'message': 'User added in the database'})
 
 
 def sign_out(token):
@@ -99,9 +96,9 @@ def sign_out(token):
         cursor.execute("DELETE from loggedUser WHERE token='" + token + "'")
         db.commit()
         close_db()
-        return 'true'
+        return True
     except sqlite3.OperationalError, msg:
-        return 'false'
+        return False
 
 
 # change password
@@ -116,9 +113,9 @@ def change_password(token, old_password, new_password):
         cursor.execute("UPDATE users SET password='"+ new_password +"' WHERE email='"+ email +"'")
         db.commit()
         close_db()
-        return json.dumps({'success': 'true', 'message': 'Password changed'})
+        return json.dumps({'success': True, 'message': 'Password changed'})
     else:
-        return json.dumps({'success': 'false', 'message': 'Wrong password'})
+        return json.dumps({'success': False, 'message': 'Wrong password'})
 
 
 
@@ -128,7 +125,7 @@ def get_user_data_by_token(token):
     cursor.execute("SELECT * FROM users INNER JOIN loggedUser ON users.email=loggedUser.email WHERE loggedUser.token ='"+ token +"'")
     user_data = cursor.fetchone()
     close_db()
-    return json.dumps({'success': 'true', 'message': 'Data transfered', 'data': {'email': user_data[0], 'firstname': user_data[2], 'familyname': user_data[3], 'gender': user_data[4], 'city': user_data[5], 'country': user_data[6]}})
+    return json.dumps({'success': True, 'message': 'Data transfered', 'data': {'email': user_data[0], 'firstname': user_data[2], 'familyname': user_data[3], 'gender': user_data[4], 'city': user_data[5], 'country': user_data[6]}})
 
 
 
@@ -138,7 +135,7 @@ def get_user_data_by_email(email):
     cursor.execute("SELECT * from users WHERE email='" + email + "'")
     user_data = cursor.fetchone()
     close_db()
-    return json.dumps({'success': 'true', 'message': 'Data transfered', 'data': {'email': user_data[0], 'firstname': user_data[2], 'familyname': user_data[3], 'gender': user_data[4], 'city': user_data[5], 'country': user_data[6]}})
+    return json.dumps({'success': True, 'message': 'Data transfered', 'data': {'email': user_data[0], 'firstname': user_data[2], 'familyname': user_data[3], 'gender': user_data[4], 'city': user_data[5], 'country': user_data[6]}})
 
 
 
@@ -154,7 +151,7 @@ def get_user_messages_by_token(token):
         post = json.dumps({'fromEmail' : message[0], 'content': message[1]})
         array_messages.append(post)
     if len(array_messages) == 0:
-        return json.dumps({'success': 'false', 'message': 'No message found for this person', 'data': []})
+        return json.dumps({'success': False, 'message': 'No message found for this person', 'data': []})
     else:
         return json.dumps({'success': True, 'message': 'Messages transfered', 'data': array_messages})
 
@@ -171,7 +168,7 @@ def get_user_messages_by_email(email):
         post = json.dumps({'fromEmail' : message[0], 'content': message[1]})
         array_messages.append(post)
     if len(array_messages) == 0:
-        return json.dumps({'success': 'false', 'message': 'No message found for this person', 'data': []})
+        return json.dumps({'success': False, 'message': 'No message found for this person', 'data': []})
     else:
         return json.dumps({'success': True, 'message': 'Messages transfered', 'data': array_messages})
 
@@ -183,4 +180,4 @@ def post_message(token, message, email):
     fromEmail = cursor.fetchone()[0]
     db.execute("INSERT INTO messages (fromEmail, toEmail, content) VALUES (?, ?, ?)", (fromEmail, email, message))
     db.commit()
-    return json.dumps({'success': 'true', 'message': 'Message posted'})
+    return json.dumps({'success': True, 'message': 'Message posted'})

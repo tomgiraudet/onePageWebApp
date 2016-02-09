@@ -20,6 +20,19 @@ def get_db():
     return db
 
 
+# Check if user with the email email is in the database
+def user_in_database(email):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT email from users WHERE email='" + email + "'")
+    close_db()
+    if cursor.fetchone():
+        return "true"
+    else:
+        return "false"
+
+
+
 def user_exists(email, password):
     db = get_db()
     cursor = db.cursor()
@@ -134,7 +147,7 @@ def get_user_messages_by_token(token):
     cursor = db.cursor()
     cursor.execute("SELECT email FROM loggedUser WHERE token ='"+ token +"'")
     email = cursor.fetchone()[0]
-    cursor.execute("SELECT fromEmail, content FROM messages WHERE toEmail ='"+ email +"'")
+    cursor.execute("SELECT fromEmail, content FROM messages WHERE toEmail ='" + email + "'")
     users_messages = cursor.fetchall()
     array_messages = []
     for message in users_messages:
@@ -145,57 +158,29 @@ def get_user_messages_by_token(token):
     else:
         return json.dumps({'success': True, 'message': 'Messages transfered', 'data': array_messages})
 
-''''
-    if cursor.fetchone() :
-        loggedUser = [dict(token=row[0], email=row[1]) for row in cursor.fetchall()]
-        email = loggedUser[0]['email']
-        cursor.execute("SELECT * from message WHERE fromEmail='" + email + "'")
-        messages = [dict(id=row[0], fromEmail=row[1], toEmail=row[2], content=row[3]) for row in cursor.fetchall()]
-        if messages.fetchone():
-            messagesJson = json.dumps(messages, separators=(',', ':'), sort_keys=True)
-            return json.dumps({'success': 'true', 'message': 'Messages transfered', 'data': messagesJson})
-        else:
-            return json.dumps({'success': 'false', 'message': 'No message found for this person', 'data': 'error'})
-    else:
-        return json.dumps({'success': 'false', 'message': 'User unknown', 'data' : 'error'})
-        '''''
 
 
-def get_user_messages_by_email(token, email):
+def get_user_messages_by_email(email):
     db = get_db()
     cursor = db.cursor()
-    cursor.execute("SELECT * from loggedUser WHERE token='" + token + "'")
 
-    if cursor.fetchone() :
-        cursor.execute("SELECT * from message WHERE fromEmail='" + email + "'")
-        messages = [dict(id=row[0], fromEmail=row[1], toEmail=row[2], content=row[3]) for row in cursor.fetchall()]
-        if messages.fetchone():
-            messagesJson = json.dumps(messages, separators=(',', ':'), sort_keys=True)
-            return json.dumps({'success': 'true', 'message': 'Messages transfered', 'data': messagesJson})
-        else:
-            return json.dumps({'success': 'false', 'message': 'No message found for this person', 'data': 'error'})
+    cursor.execute("SELECT fromEmail, content from messages WHERE toEmail='" + email + "'")
+    users_messages = cursor.fetchall()
+    array_messages = []
+    for message in users_messages:
+        post = json.dumps({'fromEmail' : message[0], 'content': message[1]})
+        array_messages.append(post)
+    if len(array_messages) == 0:
+        return json.dumps({'success': 'false', 'message': 'No message found for this person', 'data': []})
     else:
-        return json.dumps({'success': 'false', 'message': 'User unknown', 'data' : 'error'})
-
+        return json.dumps({'success': True, 'message': 'Messages transfered', 'data': array_messages})
 
 
 def post_message(token, message, email):
     db = get_db()
     cursor = db.cursor()
-    cursor.execute("SELECT * from loggedUser WHERE token='" + token + "'")
-
-    if cursor.fetchone() :
-        #The user is connected
-        loggedUser = [dict(token=row[0], email=row[1]) for row in cursor.fetchall()]
-        _fromEmail = loggedUser[0]['email']
-
-        cursor.execute("SELECT * from users WHERE email='" + email + "'")
-        if cursor.fetchone() :
-            #The targeted user exist
-            cursor.execute("INSERT INTO messages (fromEmail, toEmail, content)VALUES (_fromEmail, email, message)")
-            return json.dumps({'success': 'true', 'message': 'Message posted'})
-        else:
-            return json.dumps({'success': 'false', 'message': 'Targeted User unknown'})
-    else:
-        #User not connected
-        return json.dumps({'success': 'false', 'message': 'User unknown'})
+    cursor.execute("SELECT email from loggedUser WHERE token='" + token + "'")
+    fromEmail = cursor.fetchone()[0]
+    db.execute("INSERT INTO messages (fromEmail, toEmail, content) VALUES (?, ?, ?)", (fromEmail, email, message))
+    db.commit()
+    return json.dumps({'success': 'true', 'message': 'Message posted'})

@@ -116,14 +116,30 @@ def get_user_messages_by_token(token):
         return json.dumps({'success': 'false', 'message': 'User not logged', 'data': []})
 
 
+# Retrieves the stored messages for the user specified by the passed email address
+# Tested : V
 @app.route('/get_user_messages_by_email/<token>/<email>')
 def get_user_messages_by_email(token, email):
-    return database_helper.get_user_messages_by_email(token=token, email=email)
+    logged = database_helper.user_logged_by_token(token=token)
+    if logged == 'true':
+        return database_helper.get_user_messages_by_email(email=email)
+    else:
+        return json.dumps({'success': 'false', 'message': 'User not logged', 'data': []})
 
 
 @app.route('/post_message/<token>/<message>/<email>')
 def post_message(token, message, email):
-    return database_helper.post_message(token=token, message=message, email=email)
+    logged = database_helper.user_logged_by_token(token=token)
+    if logged == 'true':
+        # user logged
+        exists = database_helper.user_in_database(email=email)
+        if exists == 'true':
+            # target user exists
+            return database_helper.post_message(token=token, message=message, email=email)
+        else:
+            return json.dumps({'success': 'false', 'message': 'User not in the database'})
+    else:
+        return json.dumps({'success': 'false', 'message': 'User not logged'})
 
 
 

@@ -1,4 +1,5 @@
 from flask import Flask
+from flask import request
 import json
 import database_helper
 import os,binascii
@@ -10,35 +11,49 @@ def index():
     return "Hello ! :)"
 
 
-# TODO: True instead of 'true'!
-
-
 # Authenticates the username by the provided password
 # Tested : V
-@app.route('/sign_in/<email>/<password>')
-def sign_in(email, password):
-    exist = database_helper.user_exists(email=email, password=password)
-    if exist:
-            return connect(email)
+@app.route('/sign_in', methods=['POST'])
+def sign_in():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+
+        exist = database_helper.user_exists(email=email, password=password)
+        if exist:
+                return connect(email)
+        else:
+            return json.dumps({'success': False, 'message': 'User is not in the database', 'data': ''})
     else:
-        return json.dumps({'success': False, 'message': 'User is not in the database', 'data': ''})
+        return json.dumps({'success': False, 'message': 'Not a POST method', 'data': ''})
 
 
 # Registers a user in the database.
 # tested : V
-@app.route('/sign_up/<email>/<password>/<firstname>/<familyname>/<gender>/<city>/<country>')
-def sign_up(email, password, firstname, familyname, gender, city, country):
-    exists = database_helper.user_exists(email=email, password=password)
-    if exists:
-        return json.dumps({'success': False, 'message': 'User already exists', 'data': ''})
-    else:
-        result = json.loads(database_helper.insert_user(email, password, firstname, familyname, gender, city, country))
-        # user added to the database
-        if result['success']:
-            return connect(email)
-        # user hasn't been added
+@app.route('/sign_up', methods=['POST'])
+def sign_up():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        firstname = request.form['firstname']
+        familyname = request.form['familyname']
+        gender = request.form['gender']
+        city = request.form['city']
+        country = request.form['country']
+
+        exists = database_helper.user_exists(email=email, password=password)
+        if exists:
+            return json.dumps({'success': False, 'message': 'User already exists', 'data': ''})
         else:
-            return json.dumps({'success': False, 'message': result['message'], 'data': ''})
+            result = json.loads(database_helper.insert_user(email, password, firstname, familyname, gender, city, country))
+            # user added to the database
+            if result['success']:
+                return connect(email)
+            # user hasn't been added
+            else:
+                return json.dumps({'success': False, 'message': result['message'], 'data': ''})
+    else:
+        return json.dumps({'success': False, 'message': 'Not a POST method', 'data': ''})
 
 
 # Connect a user

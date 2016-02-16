@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/twidder.iml" filepath="$PROJECT_DIR$/.idea/twidder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../twidder/.idea/twidder.iml" filepath="$PROJECT_DIR$/../twidder/.idea/twidder.iml" />
     </modules>
   </component>
 </project>

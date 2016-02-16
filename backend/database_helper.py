@@ -2,8 +2,7 @@ from flask import g
 import json
 import sqlite3
 
-DATABASE = '/Users/juliettegonzalez/PycharmProjects/onePageWebApp/backend/database.db'
-
+DATABASE = 'database.db'
 
 def connect_db():
     return sqlite3.connect(DATABASE)

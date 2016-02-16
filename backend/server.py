@@ -6,9 +6,10 @@ import os,binascii
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def index():
-    return "Hello ! :)"
+    return app.send_static_file('client.html')
 
 
 # Authenticates the username by the provided password
@@ -16,8 +17,11 @@ def index():
 @app.route('/sign_in', methods=['POST'])
 def sign_in():
     if request.method == 'POST':
-        email = request.form['email']
+        email = request.form['username']
         password = request.form['password']
+
+        #email = 'juliette@outlook.com'
+        #password = '123456'
 
         exist = database_helper.user_exists(email=email, password=password)
         if exist:
@@ -33,11 +37,11 @@ def sign_in():
 @app.route('/sign_up', methods=['POST'])
 def sign_up():
     if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        firstname = request.form['firstname']
-        familyname = request.form['familyname']
-        gender = request.form['gender']
+        email = request.form['new-username']
+        password = request.form['new-password']
+        firstname = request.form['new-firstname']
+        familyname = request.form['new-familyname']
+        gender = request.form['sex-radio-btn']
         city = request.form['city']
         country = request.form['country']
 

@@ -15,6 +15,7 @@ function randomimage() {
     return(image[rand-1]);
 }
 
+var SCRIPT_ROOT = 'http://127.0.0.1:5000/';
 
 window.onload = function() {
 
@@ -27,6 +28,9 @@ window.onload = function() {
 };
 
 function displayWelcomeView(){
+    var request = new XMLHttpRequest();
+    var res_request;
+
     var welcomeDiv = document.getElementById("welcome-display");
     welcomeDiv.innerHTML = document.getElementById('welcome-view').innerHTML ;
     btnLogin = document.getElementById("btn-login");
@@ -35,26 +39,42 @@ function displayWelcomeView(){
     btnLogin.addEventListener("click", function() {
         var username = document.getElementById("user-username").value;
         var password = document.getElementById("user-password").value;
-        var res = serverstub.signIn(username,password);
-        if((/^[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]{2,6}$/.test(username)) && (password.length > 5)){
-            // Ok, sign in
-            if(res.success){
-                document.getElementById("in-username-form").setAttribute("class", "input-group has-success");
-                document.getElementById("in-password-form").setAttribute("class", "input-group has-success");
-                if (document.getElementById("login-error") != null ){
-                    document.getElementById("error-area-signin").removeChild(document.getElementById("login-error"));
+
+        if((/^[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]{2,6}$/.test(username)) && (password.length > 5)) {
+
+            request.open('POST', SCRIPT_ROOT + 'sign_in', true);
+            request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+            username_arg = 'username=' + username;
+            password_arg = 'password=' + password;
+            request_arg = username_arg + '&' + password_arg;
+
+            request.send(request_arg);
+
+            request.onreadystatechange = function () {
+                if (request.readyState == 4 && request.status == 200) {
+                     // Ok, sign in
+                    res_request = JSON.parse(request.responseText);
+
+                    if (res_request.success) {
+                        document.getElementById("in-username-form").setAttribute("class", "input-group has-success");
+                        document.getElementById("in-password-form").setAttribute("class", "input-group has-success");
+                        if (document.getElementById("login-error") != null) {
+                            document.getElementById("error-area-signin").removeChild(document.getElementById("login-error"));
+                        }
+                        changeWelcomeToProfile();
+
+                    } else {
+                        // error
+                        displayErrorSignIn('Wrong username or password.');
+                    }
+                    return false;
                 }
-                changeWelcomeToProfile();
+            };
 
-            }else {
-                // error
-                displayErrorSignIn(res);
-            }
-        }else {
-            displayErrorSignIn(res);
+        } else {
+            displayErrorSignIn('Not valid email address');
         }
-
-        return false;
 
     });
 
@@ -113,7 +133,7 @@ function displayWelcomeView(){
     // Display random image
     var img = document.createElement("IMG");
     img.setAttribute("id", "brand-logo");
-    img.setAttribute("src", "../public/img/" + randomimage());
+    img.setAttribute("src", "static/public/img/" + randomimage());
     document.getElementById('ad').appendChild(img);
 }
 
@@ -370,7 +390,7 @@ function displayErrorSignIn(res) {
         var errorlabel = document.createElement("label");
         errorlabel.setAttribute("class", "label label-danger");
         errorlabel.setAttribute("id", "login-error");
-        errorlabel.innerText = res.message;
+        errorlabel.innerText = res;
         document.getElementById("error-area-signin").appendChild(errorlabel);
     }
     if (document.getElementById("signup-error") != null) {
@@ -429,7 +449,7 @@ function displaySuccessShare(msg){
     if(document.getElementById("share-error") != null){
         document.getElementById("share-error").remove();
     }
-        var successlabel = document.createElement("label");
+    var successlabel = document.createElement("label");
     successlabel.setAttribute("class", "label label-success");
     successlabel.setAttribute("id", "share-error");
     successlabel.innerText = msg;

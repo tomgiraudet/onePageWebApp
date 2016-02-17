@@ -21,11 +21,13 @@ def index():
 @app.route('/sign_in', methods=['POST'])
 def sign_in():
     if request.method == 'POST':
-        email = request.form['username']
-        password = request.form['password']
 
-        #email = 'juliette@outlook.com'
-        #password = '123456'
+        data = request.json
+        email = data['username']
+        password = data['password']
+
+        #email = request.form['username']
+        #password = request.form['password']
 
         exist = database_helper.user_exists(email=email, password=password)
         if exist:

@@ -43,13 +43,10 @@ function displayWelcomeView(){
         if((/^[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]{2,6}$/.test(username)) && (password.length > 5)) {
 
             request.open('POST', SCRIPT_ROOT + 'sign_in', true);
-            request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            request.setRequestHeader("Content-type", "application/json");
 
-            username_arg = 'username=' + username;
-            password_arg = 'password=' + password;
-            request_arg = username_arg + '&' + password_arg;
-
-            request.send(request_arg);
+            parameters = JSON.stringify({"username":username,"password":password});
+            request.send(parameters);
 
             request.onreadystatechange = function () {
                 if (request.readyState == 4 && request.status == 200) {

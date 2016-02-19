@@ -233,57 +233,33 @@ function displayProfileView(token){
             founduserwall.innerHTML = "";
         }
         searchmail = document.getElementById("search-user-input").value;
-        founduser = serverstub.getUserDataByEmail(token,  searchmail);
-        if(founduser.success == false){
-            // TODO : Display error
-        }else{
-            founduser = founduser.data;
-            profilearea = document.createElement("div");
-            profilearea.setAttribute("class", "col-md-4 side-panel");
-            profilearea.setAttribute("id", "search-user-id");
 
-            profilearea.innerHTML =
-                "<div class='title-sign'> Profile </div>" +
-                "<div class='container'> " +
-                "<dl>" +
-                "<dt>Username : </dt>" +
-                "<div id='profil_username'>"+ founduser.email +"</div>" +
-                "<br>" +
-                "<dt>First name : </dt>" +
-                "<div id='profil_first_name'>"+ founduser.firstname +"</div>" +
-                "<br>" +
-                "<dt>Name : </dt>" +
-                "<div id='profil_family_name'>"+ founduser.familyname + "</div>" +
-                "<br>" +
-                "<dt>Sex : </dt>" +
-                "<div id='profil_sex'>"+ founduser.gender + "</div>" +
-                "<br>" +
-                "<dt>City :</dt>" +
-                "<div id='profil_city'>"+ founduser.city + "</div>" +
-                "<br>" +
-                "<dt>Country :</dt>" +
-                "<div id='profil_country'>"+ founduser.country + "</div>" +
-                "</dl>" +
-                "</div>";
+        request.open('GET', SCRIPT_ROOT + 'get_user_data_by_email?token=' + token + '&email=' + searchmail, true);
+        request.send();
 
-            wallarea = document.createElement("div");
-            wallarea.setAttribute("class", "panel panel-default col-xs-8");
-            wallarea.setAttribute("id", "search-user-wall");
-            wallarea.innerHTML = "<div class='panel-heading'>" +
-                "<h3 class='panel-title'>News feed : <button id='btn-refresh-wall'><span class='glyphicon glyphicon-refresh' aria-hidden='true'></span></button></h3>" +
-                "</div>" +
-                "<div id='wall-user'>" +
-                "<div class='wall panel panel-default hidden'></div>" +
-                "</div>";
+        request.onreadystatechange = function () {
+            if (request.readyState == 4 && request.status == 200) {
 
-            messageUser = (serverstub.getUserMessagesByEmail(token, searchmail));
+                res_request = JSON.parse(request.responseText);
+                userinformation = res_request.data;
 
-            founduserwall.appendChild(profilearea);
-            founduserwall.appendChild(wallarea);
 
-            displayMessageBrowserPage(messageUser);
-        }
+                mailAddressUser = userinformation.email;
+                firstNameUser = userinformation.firstname;
+                familyNameUser = userinformation.familyname;
+                sexUser = userinformation.gender;
+                cityUser = userinformation.city;
+                countryUser = userinformation.country;
 
+                document.getElementById("profil_username").innerHTML = mailAddressUser;
+                document.getElementById("profil_first_name").innerHTML = firstNameUser;
+                document.getElementById("profil_family_name").innerHTML = familyNameUser;
+                document.getElementById("profil_sex").innerHTML = sexUser;
+                document.getElementById("profil_city").innerHTML = cityUser;
+                document.getElementById("profil_country").innerHTML = countryUser;
+
+            }
+        };
     });
 
 
@@ -299,20 +275,55 @@ function displayProfileView(token){
             res_request = JSON.parse(request.responseText);
             userinformation = res_request.data;
 
-            mailAddressUser = userinformation.email;
-            firstNameUser = userinformation.firstname;
-            familyNameUser = userinformation.familyname;
-            sexUser = userinformation.gender;
-            cityUser = userinformation.city;
-            countryUser = userinformation.country;
+            if(res_request.success == false){
+                // TODO : Display error
+            }else{
+                founduser = res_request.data;
+                profilearea = document.createElement("div");
+                profilearea.setAttribute("class", "col-md-4 side-panel");
+                profilearea.setAttribute("id", "search-user-id");
 
-            document.getElementById("profil_username").innerHTML = mailAddressUser;
-            document.getElementById("profil_first_name").innerHTML = firstNameUser;
-            document.getElementById("profil_family_name").innerHTML = familyNameUser;
-            document.getElementById("profil_sex").innerHTML = sexUser;
-            document.getElementById("profil_city").innerHTML = cityUser;
-            document.getElementById("profil_country").innerHTML = countryUser;
+                profilearea.innerHTML =
+                    "<div class='title-sign'> Profile </div>" +
+                    "<div class='container'> " +
+                    "<dl>" +
+                    "<dt>Username : </dt>" +
+                    "<div id='profil_username'>"+ founduser.email +"</div>" +
+                    "<br>" +
+                    "<dt>First name : </dt>" +
+                    "<div id='profil_first_name'>"+ founduser.firstname +"</div>" +
+                    "<br>" +
+                    "<dt>Name : </dt>" +
+                    "<div id='profil_family_name'>"+ founduser.familyname + "</div>" +
+                    "<br>" +
+                    "<dt>Sex : </dt>" +
+                    "<div id='profil_sex'>"+ founduser.gender + "</div>" +
+                    "<br>" +
+                    "<dt>City :</dt>" +
+                    "<div id='profil_city'>"+ founduser.city + "</div>" +
+                    "<br>" +
+                    "<dt>Country :</dt>" +
+                    "<div id='profil_country'>"+ founduser.country + "</div>" +
+                    "</dl>" +
+                    "</div>";
 
+                wallarea = document.createElement("div");
+                wallarea.setAttribute("class", "panel panel-default col-xs-8");
+                wallarea.setAttribute("id", "search-user-wall");
+                wallarea.innerHTML = "<div class='panel-heading'>" +
+                    "<h3 class='panel-title'>News feed : <button id='btn-refresh-wall'><span class='glyphicon glyphicon-refresh' aria-hidden='true'></span></button></h3>" +
+                    "</div>" +
+                    "<div id='wall-user'>" +
+                    "<div class='wall panel panel-default hidden'></div>" +
+                    "</div>";
+
+                messageUser = (serverstub.getUserMessagesByEmail(token, searchmail));
+
+                founduserwall.appendChild(profilearea);
+                founduserwall.appendChild(wallarea);
+
+                displayMessageBrowserPage(messageUser);
+            }
         }
     };
 

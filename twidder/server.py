@@ -40,11 +40,11 @@ def sign_in():
 @app.route('/sign_up', methods=['POST'])
 def sign_up():
     if request.method == 'POST':
-        email = request.json['new-username']
-        password = request.json['new-password']
-        firstname = request.json['new-firstname']
-        familyname = request.json['new-familyname']
-        gender = request.json['sex-radio-btn']
+        email = request.json['email']
+        password = request.json['password']
+        firstname = request.json['firstname']
+        familyname = request.json['familyname']
+        gender = request.json['gender']
         city = request.json['city']
         country = request.json['country']
 

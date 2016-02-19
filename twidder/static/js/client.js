@@ -113,8 +113,21 @@ function displayWelcomeView(){
                 document.getElementById("up-address-form").setAttribute("class", "input-form");
             }
 
-            var jsonFile = { email : username, password : password, firstname : firstname, familyname : familyname,
-                gender : sex, city : city, country : country};
+            // Sending post request to sign up
+            request.open('POST', SCRIPT_ROOT + 'sign_up', true);
+            request.setRequestHeader("Content-type", "application/json");
+
+            signup_parameters = JSON.stringify({ "email" : username, "password" : password, "firstname" : firstname, "familyname" : familyname,
+                "gender" : sex, "city" : city, "country" : country});
+
+            request.send(signup_parameters);
+
+            request.onreadystatechange = function () {
+                if (request.readyState == 4 && request.status == 200) {
+
+                }
+            }
+
             var connection = serverstub.signUp(jsonFile);
 
             if(connection.success){

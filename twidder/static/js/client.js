@@ -63,7 +63,6 @@ function displayWelcomeView(){
                             document.getElementById("error-area-signin").removeChild(document.getElementById("login-error"));
                         }
                         token = res_request.data;
-                        console.log('token : ' + token);
                         changeWelcomeToProfile(token);
 
                     } else {
@@ -124,19 +123,19 @@ function displayWelcomeView(){
 
             request.onreadystatechange = function () {
                 if (request.readyState == 4 && request.status == 200) {
+                    connection = JSON.parse(request.responseText);
 
+                    if(connection.success){
+                        token = connection.data;
+                        document.getElementById("signup-form").reset();
+                        changeWelcomeToProfile(token);
+
+                    }else{
+                        displayErrorSignUp(connection.message);
+                    }
                 }
-            }
+            };
 
-            var connection = serverstub.signUp(jsonFile);
-
-            if(connection.success){
-                document.getElementById("signup-form").reset();
-                serverstub.signIn(username, password);
-                changeWelcomeToProfile();
-            }else{
-                displayErrorSignUp(connection.message);
-            }
         }else{
             // Display error
             displayErrorSignUp("Please check your information.");
@@ -296,7 +295,6 @@ function displayProfileView(token){
 
     request.onreadystatechange = function () {
         if (request.readyState == 4 && request.status == 200) {
-            console.log(request.responseText);
 
             res_request = JSON.parse(request.responseText);
             userinformation = res_request.data;

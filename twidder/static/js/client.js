@@ -42,6 +42,7 @@ function displayWelcomeView(){
 
         if((/^[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]{2,6}$/.test(username)) && (password.length > 5)) {
 
+            // Sending post request to log in
             request.open('POST', SCRIPT_ROOT + 'sign_in', true);
             request.setRequestHeader("Content-type", "application/json");
 
@@ -50,7 +51,9 @@ function displayWelcomeView(){
 
             request.onreadystatechange = function () {
                 if (request.readyState == 4 && request.status == 200) {
-                     // Ok, sign in
+                    // TODO : handle already connected case
+
+                    // Ok, sign in
                     res_request = JSON.parse(request.responseText);
 
                     if (res_request.success) {
@@ -59,7 +62,9 @@ function displayWelcomeView(){
                         if (document.getElementById("login-error") != null) {
                             document.getElementById("error-area-signin").removeChild(document.getElementById("login-error"));
                         }
-                        changeWelcomeToProfile();
+                        token = res_request.data;
+                        console.log('token : ' + token);
+                        changeWelcomeToProfile(token);
 
                     } else {
                         // error
@@ -134,8 +139,10 @@ function displayWelcomeView(){
     document.getElementById('ad').appendChild(img);
 }
 
-function displayProfileView(){
-    var token = Object.keys(JSON.parse(localStorage.getItem("loggedinusers")));
+function displayProfileView(token){
+
+    var request = new XMLHttpRequest();
+    var res_request;
 
     // Logged
     var profileDiv = document.getElementById("profile-display");
@@ -269,22 +276,36 @@ function displayProfileView(){
 
 
     // Display profil information:
-    var user = serverstub.getUserDataByToken(token);
-    userinformation = user.data;
 
-    mailAddressUser = userinformation.email;
-    firstNameUser = userinformation.firstname;
-    familyNameUser = userinformation.familyname;
-    sexUser = userinformation.gender;
-    cityUser = userinformation.city;
-    countryUser = userinformation.country;
+    // Sending get request to get user information
+    request.open('GET', SCRIPT_ROOT + 'get_user_data_by_token?token=' + token, true);
+    request.send();
 
-    document.getElementById("profil_username").innerHTML = mailAddressUser;
-    document.getElementById("profil_first_name").innerHTML = firstNameUser;
-    document.getElementById("profil_family_name").innerHTML = familyNameUser;
-    document.getElementById("profil_sex").innerHTML = sexUser;
-    document.getElementById("profil_city").innerHTML = cityUser;
-    document.getElementById("profil_country").innerHTML = countryUser;
+    request.onreadystatechange = function () {
+        if (request.readyState == 4 && request.status == 200) {
+            console.log(request.responseText);
+
+            res_request = JSON.parse(request.responseText);
+            userinformation = res_request.data;
+
+            mailAddressUser = userinformation.email;
+            firstNameUser = userinformation.firstname;
+            familyNameUser = userinformation.familyname;
+            sexUser = userinformation.gender;
+            cityUser = userinformation.city;
+            countryUser = userinformation.country;
+
+            document.getElementById("profil_username").innerHTML = mailAddressUser;
+            document.getElementById("profil_first_name").innerHTML = firstNameUser;
+            document.getElementById("profil_family_name").innerHTML = familyNameUser;
+            document.getElementById("profil_sex").innerHTML = sexUser;
+            document.getElementById("profil_city").innerHTML = cityUser;
+            document.getElementById("profil_country").innerHTML = countryUser;
+
+        }
+    };
+
+
 
     // Share button
     btnShare = document.getElementById("btn-share");
@@ -340,10 +361,10 @@ function changeProfileToWelcome(){
     displayWelcomeView();
 }
 
-function changeWelcomeToProfile(){
+function changeWelcomeToProfile(token){
     var welcomeDiv = document.getElementById("welcome-page");
     welcomeDiv.remove();
-    displayProfileView();
+    displayProfileView(token);
 }
 
 function displayErrorChangePassword(msg){

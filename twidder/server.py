@@ -26,9 +26,6 @@ def sign_in():
         email = data['username']
         password = data['password']
 
-        #email = request.form['username']
-        #password = request.form['password']
-
         exist = database_helper.user_exists(email=email, password=password)
         if exist:
                 return connect(email)
@@ -43,13 +40,13 @@ def sign_in():
 @app.route('/sign_up', methods=['POST'])
 def sign_up():
     if request.method == 'POST':
-        email = request.form['new-username']
-        password = request.form['new-password']
-        firstname = request.form['new-firstname']
-        familyname = request.form['new-familyname']
-        gender = request.form['sex-radio-btn']
-        city = request.form['city']
-        country = request.form['country']
+        email = request.json['new-username']
+        password = request.json['new-password']
+        firstname = request.json['new-firstname']
+        familyname = request.json['new-familyname']
+        gender = request.json['sex-radio-btn']
+        city = request.json['city']
+        country = request.json['country']
 
         exists = database_helper.user_exists(email=email, password=password)
         if exists:
@@ -78,7 +75,7 @@ def connect(email):
         else:
             return json.dumps({'success': False, 'message': logged['message'], 'data': ''})
     else:
-        return json.dumps({'success': False, 'message': 'User already connected', 'data': ''})
+        return json.dumps({'success': True, 'message': 'User already connected', 'data': ''})
 
 
 # Signs out a user from the system
@@ -111,8 +108,10 @@ def change_password(token, old, new):
 
 # Retrieves the stored data for the user logged with the token
 # Tested : V
-@app.route('/get_user_data_by_token/<token>')
-def get_user_data_by_token(token):
+@app.route('/get_user_data_by_token', methods=['GET'])
+def get_user_data_by_token():
+    token = request.args.get('token', '')
+
     logged = database_helper.user_logged_by_token(token=token)
     if logged:
         return database_helper.get_user_data_by_token(token=token)

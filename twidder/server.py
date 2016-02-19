@@ -127,8 +127,11 @@ def get_user_data_by_token():
 
 # Retrieves the stored data for the user specified by the passed email address
 # Tested : V
-@app.route('/get_user_data_by_email/<token>/<email>')
-def get_user_data_by_email(token, email):
+@app.route('/get_user_data_by_email', methods=['GET'])
+def get_user_data_by_email():
+    token = request.args.get('token', '')
+    email = request.args.get('email', '')
+
     logged = database_helper.user_logged_by_token(token=token)
     if logged:
         return database_helper.get_user_data_by_email(email=email)

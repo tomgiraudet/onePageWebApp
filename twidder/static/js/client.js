@@ -191,23 +191,37 @@ function displayProfileView(token){
         newpassword = document.getElementById("logged-new-password").value;
 
         if ((oldpassword != "") && (newpassword != "")) {
-            msg = serverstub.changePassword(token, oldpassword, newpassword);
+            // Sending post request to change password
+            request.open('POST', SCRIPT_ROOT + 'change_password', true);
+            request.setRequestHeader("Content-type", "application/json");
 
-            if (msg.success) {
-                // Display valid message
-                document.getElementById("form-change-password").setAttribute("class", "form-group");
-                if(document.getElementById("change-password-error") != null) document.getElementById("response-area-account").removeChild(document.getElementById("change-password-error"));
+            password_parameters = JSON.stringify({ "token" : token, "old" : oldpassword, "new" : newpassword});
 
-                accountvalidlabel = document.createElement("label");
-                accountvalidlabel.setAttribute("class", "label label-success");
-                accountvalidlabel.setAttribute("id", "change-password-valid");
-                accountvalidlabel.style.marginLeft = "15px";
-                accountvalidlabel.innerText = "Your password is changed";
-                if(document.getElementById("change-password-valid") == null) document.getElementById("response-area-account").appendChild(accountvalidlabel);
+            request.send(password_parameters);
 
-            }else{
-                displayErrorChangePassword(msg.message);
-            }
+            request.onreadystatechange = function () {
+                if (request.readyState == 4 && request.status == 200) {
+                    res_request = JSON.parse(request.responseText);
+
+                    if (res_request.success) {
+                        // Display valid message
+                        document.getElementById("form-change-password").setAttribute("class", "form-group");
+                        if(document.getElementById("change-password-error") != null) document.getElementById("response-area-account").removeChild(document.getElementById("change-password-error"));
+
+                        accountvalidlabel = document.createElement("label");
+                        accountvalidlabel.setAttribute("class", "label label-success");
+                        accountvalidlabel.setAttribute("id", "change-password-valid");
+                        accountvalidlabel.style.marginLeft = "15px";
+                        accountvalidlabel.innerText = "Your password is changed";
+                        if(document.getElementById("change-password-valid") == null) document.getElementById("response-area-account").appendChild(accountvalidlabel);
+
+                    }else{
+                        displayErrorChangePassword(res_request.message);
+                    }
+                }
+            };
+
+
         }else{
             displayErrorChangePassword("Complete the fields");
         }
@@ -217,9 +231,18 @@ function displayProfileView(token){
     var loggoutbtn = document.getElementById("loggout-btn");
     loggoutbtn.setAttribute("onclick", "return false;");  // make the page not refresh
     loggoutbtn.addEventListener("click", function(){
-        loggedInUsers = Object.keys(JSON.parse(localStorage.getItem("loggedinusers")));
-        serverstub.signOut(loggedInUsers);
-        changeProfileToWelcome();
+        // Sending get request to get user information
+        request.open('GET', SCRIPT_ROOT + 'sign_out?token=' + token, true);
+        request.send();
+
+        request.onreadystatechange = function () {
+            if (request.readyState == 4 && request.status == 200) {
+                res_request = JSON.parse(request.responseText);
+                if (res_request.success){
+                    changeProfileToWelcome();
+                }
+            }
+        };
     });
 
     // BROWSER
@@ -287,7 +310,7 @@ function displayProfileView(token){
     });
 
 
-    // Display profil information:
+    // Display profile information:
 
     // Sending get request to get user information
     request.open('GET', SCRIPT_ROOT + 'get_user_data_by_token?token=' + token, true);

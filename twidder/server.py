@@ -80,8 +80,10 @@ def connect(email):
 
 # Signs out a user from the system
 # Tested : V
-@app.route('/sign_out/<token>')
-def sign_out(token):
+@app.route('/sign_out', methods=['GET'])
+def sign_out():
+    token = request.args.get('token', '')
+
     logged = database_helper.user_logged_by_token(token=token)
 
     if logged:
@@ -96,9 +98,13 @@ def sign_out(token):
 
 # Changes the password of the current user to a new one.
 # Tested: V
-@app.route('/change_password/<token>/<old>/<new>')
-def change_password(token, old, new):
+@app.route('/change_password', methods=['POST'])
+def change_password():
     # check if the user is logged
+    token = request.json['token']
+    old = request.json['old']
+    new = request.json['new']
+
     logged = database_helper.user_logged_by_token(token=token)
     if logged:
         return database_helper.change_password(token=token, old_password=old, new_password=new)

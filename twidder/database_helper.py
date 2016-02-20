@@ -177,6 +177,9 @@ def post_message(token, message, email):
     cursor = db.cursor()
     cursor.execute("SELECT email from loggedUser WHERE token='" + token + "'")
     fromEmail = cursor.fetchone()[0]
-    db.execute("INSERT INTO messages (fromEmail, toEmail, content) VALUES (?, ?, ?)", (fromEmail, email, message))
+    if email == '':
+        db.execute("INSERT INTO messages (fromEmail, toEmail, content) VALUES (?, ?, ?)", (fromEmail, fromEmail, message))
+    else:
+        db.execute("INSERT INTO messages (fromEmail, toEmail, content) VALUES (?, ?, ?)", (fromEmail, email, message))
     db.commit()
     return json.dumps({'success': True, 'message': 'Message posted'})

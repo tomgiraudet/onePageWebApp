@@ -153,9 +153,6 @@ function displayWelcomeView(){
 
 function displayProfileView(token){
 
-    var request = new XMLHttpRequest();
-    var res_request;
-
     // Logged
     var profileDiv = document.getElementById("profile-display");
     profileDiv.innerHTML = document.getElementById('profile-view').innerHTML ;
@@ -192,16 +189,17 @@ function displayProfileView(token){
 
         if ((oldpassword != "") && (newpassword != "")) {
             // Sending post request to change password
-            request.open('POST', SCRIPT_ROOT + 'change_password', true);
-            request.setRequestHeader("Content-type", "application/json");
+            password_request = new XMLHttpRequest();
+            password_request.open('POST', SCRIPT_ROOT + 'change_password', true);
+            password_request.setRequestHeader("Content-type", "application/json");
 
             password_parameters = JSON.stringify({ "token" : token, "old" : oldpassword, "new" : newpassword});
 
-            request.send(password_parameters);
+            password_request.send(password_parameters);
 
-            request.onreadystatechange = function () {
-                if (request.readyState == 4 && request.status == 200) {
-                    res_request = JSON.parse(request.responseText);
+            password_request.onreadystatechange = function () {
+                if (password_request.readyState == 4 && password_request.status == 200) {
+                    res_request = JSON.parse(password_request.responseText);
 
                     if (res_request.success) {
                         // Display valid message
@@ -231,13 +229,15 @@ function displayProfileView(token){
     var loggoutbtn = document.getElementById("loggout-btn");
     loggoutbtn.setAttribute("onclick", "return false;");  // make the page not refresh
     loggoutbtn.addEventListener("click", function(){
-        // Sending get request to get user information
-        request.open('GET', SCRIPT_ROOT + 'sign_out?token=' + token, true);
-        request.send();
 
-        request.onreadystatechange = function () {
-            if (request.readyState == 4 && request.status == 200) {
-                res_request = JSON.parse(request.responseText);
+        // Sending get request to get user information
+        loggout_request = new XMLHttpRequest();
+        loggout_request.open('GET', SCRIPT_ROOT + 'sign_out?token=' + token, true);
+        loggout_request.send();
+
+        loggout_request.onreadystatechange = function () {
+            if (loggout_request.readyState == 4 && loggout_request.status == 200) {
+                res_request = JSON.parse(loggout_request.responseText);
                 if (res_request.success){
                     changeProfileToWelcome();
                 }
@@ -258,13 +258,14 @@ function displayProfileView(token){
         }
         searchmail = document.getElementById("search-user-input").value;
 
-        request.open('GET', SCRIPT_ROOT + 'get_user_data_by_email?token=' + token + '&email=' + searchmail, true);
-        request.send();
+        browser_request = new XMLHttpRequest();
+        browser_request.open('GET', SCRIPT_ROOT + 'get_user_data_by_email?token=' + token + '&email=' + searchmail, true);
+        browser_request.send();
 
-        request.onreadystatechange = function () {
-            if (request.readyState == 4 && request.status == 200) {
+        browser_request.onreadystatechange = function () {
+            if (browser_request.readyState == 4 && browser_request.status == 200) {
 
-                res_request = JSON.parse(request.responseText);
+                res_request = JSON.parse(browser_request.responseText);
 
                 if(res_request.success == false){
                     // TODO : Display error
@@ -309,12 +310,25 @@ function displayProfileView(token){
                         "<div class='wall panel panel-default hidden'></div>" +
                         "</div>";
 
-                    messageUser = (serverstub.getUserMessagesByEmail(token, searchmail));
 
-                    founduserwall.appendChild(profilearea);
-                    founduserwall.appendChild(wallarea);
+                    // Sending get request to get user information
+                    browser_message_request = new XMLHttpRequest();
+                    browser_message_request.open('GET', SCRIPT_ROOT + 'get_user_messages_by_email?token=' + token + '&email=' + searchmail, true);
+                    browser_message_request.send();
 
-                    displayMessageBrowserPage(messageUser);
+                    browser_message_request.onreadystatechange = function () {
+                        if (browser_message_request.readyState == 4 && browser_message_request.status == 200) {
+                            res_request = JSON.parse(browser_message_request.responseText);
+
+                            founduserwall.appendChild(profilearea);
+                            founduserwall.appendChild(wallarea);
+
+                            displayMessageBrowserPage(res_request);
+
+                        }
+                    };
+
+
                 }
             }
         };
@@ -323,16 +337,17 @@ function displayProfileView(token){
     });
 
 
-    // Display profile information:
+    // PROFILE INFORMATION
 
     // Sending get request to get user information
-    request.open('GET', SCRIPT_ROOT + 'get_user_data_by_token?token=' + token, true);
-    request.send();
+    profile_request = new XMLHttpRequest();
+    profile_request.open('GET', SCRIPT_ROOT + 'get_user_data_by_token?token=' + token, true);
+    profile_request.send();
 
-    request.onreadystatechange = function () {
-        if (request.readyState == 4 && request.status == 200) {
+    profile_request.onreadystatechange = function () {
+        if (profile_request.readyState == 4 && profile_request.status == 200) {
 
-            res_request = JSON.parse(request.responseText);
+            res_request = JSON.parse(profile_request.responseText);
             userinformation = res_request.data;
 
 
@@ -355,8 +370,7 @@ function displayProfileView(token){
 
 
 
-
-    // Share button
+    // SHARE BUTTON
     btnShare = document.getElementById("btn-share");
 
     btnShare.setAttribute("onclick", "return false;");  // make the page not refresh
@@ -364,31 +378,44 @@ function displayProfileView(token){
         var content = document.getElementById("comment").value;
         var destination = document.getElementById("destination").value;
 
-        if(destination == ""){
-            // Post on my own wall
-            res = serverstub.postMessage(token, content);
-            eraseErrorShare();
-            displaySuccessShare(res.message);
-            document.getElementById("comment").value = "";
-        }else {
-            // Post to someone else's wall
-            res = serverstub.postMessage(token, content, destination);
-            if(res.success == false){
-                displayErrorShare(res.message);
-            } else {
-                eraseErrorShare();
-                displaySuccessShare(res.message);
-                document.getElementById("comment").value = "";
+        // Sending post request to post message to someone else's wall
+        post_request = new XMLHttpRequest();
+        post_request.open('POST', SCRIPT_ROOT + 'post_message', true);
+        post_request.setRequestHeader("Content-type", "application/json");
+
+        parameters = JSON.stringify({"token":token , "message":content, "email":destination});
+        post_request.send(parameters);
+
+        post_request.onreadystatechange = function () {
+            if (post_request.readyState == 4 && post_request.status == 200) {
+
+                res_request = JSON.parse(post_request.responseText);
+                if(res_request.success == false){
+                    displayErrorShare(res_request.message);
+                } else {
+                    eraseErrorShare();
+                    displaySuccessShare(res_request.message);
+                    document.getElementById("comment").value = "";
+                }
             }
-        }
+        };
 
         return false;
 
     });
 
-    // Display message on Home page
-    var msg = serverstub.getUserMessagesByToken(token);
-    displayMessageHomePage(msg);
+    // MESSAGE ON PROFILE WALL
+    // Sending get request to get user information
+    profile_message_request = new XMLHttpRequest();
+    profile_message_request.open('GET', SCRIPT_ROOT + 'get_user_messages_by_token?token=' + token, true);
+    profile_message_request.send();
+
+    profile_message_request.onreadystatechange = function () {
+        if (profile_message_request.readyState == 4 && profile_message_request.status == 200) {
+            res_request = JSON.parse(profile_message_request.responseText);
+            displayMessageHomePage(res_request);
+        }
+    };
 
     // Refresh button of newsfeed :
     document.getElementById("btn-refresh").addEventListener("click", function(){
@@ -397,9 +424,16 @@ function displayProfileView(token){
         content.innerHTML = "<div class=\"message panel panel-default hidden\"> <\/div>";
 
         // Reload
-        var token = Object.keys(JSON.parse(localStorage.getItem("loggedinusers")));
-        var msg = serverstub.getUserMessagesByToken(token);
-        displayMessageHomePage(msg);
+        reload_message_request = new XMLHttpRequest();
+        reload_message_request.open('GET', SCRIPT_ROOT + 'get_user_messages_by_token?token=' + token, true);
+        reload_message_request.send();
+
+        reload_message_request.onreadystatechange = function () {
+            if (reload_message_request.readyState == 4 && reload_message_request.status == 200) {
+                res_request = JSON.parse(reload_message_request.responseText);
+                displayMessageHomePage(res_request);
+            }
+        };
     });
 
 }
@@ -474,8 +508,10 @@ function displayErrorSignIn(res) {
 
 function displayMessageHomePage(msg){
     var template = $(".message.hidden");
+
     if(msg.success){
         msg.data.forEach(function (message){
+            message = JSON.parse(message);
             var msg = template.clone().removeClass("hidden");
             div = document.createElement("div");
             div.setAttribute("class", "panel-body content-message");
@@ -490,6 +526,7 @@ function displayMessageBrowserPage(msg){
     var template = $(".wall.hidden");
     if(msg.success){
         msg.data.forEach(function (message){
+            message = JSON.parse(message);
             var msg = template.clone().removeClass("hidden");
             div = document.createElement("div");
             div.setAttribute("class", "panel-body content-message");

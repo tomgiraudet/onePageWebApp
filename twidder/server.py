@@ -6,6 +6,7 @@ import os
 from twidder import app
 from flask import request
 
+
 import database_helper
 
 #app = Flask(__name__)
@@ -14,6 +15,23 @@ import database_helper
 @app.route('/')
 def index():
     return app.send_static_file('client.html')
+
+
+# Connect to socket
+@app.route("/connect_socket")
+def connect_socket():
+    print 'ok'
+    if request.environ.get('wsgi.websocket'):
+        print "if"
+        ws = request.environ['wsgi.websocket']
+        initialData = ws.receive()
+
+        print("initialdata: "+str(initialData))
+        #ws.close()
+        return ""
+    else:
+        print "else"
+        return "Not found"
 
 
 # Authenticates the username by the provided password
@@ -67,15 +85,18 @@ def sign_up():
 # Connect a user
 # Tested : V
 def connect(email):
-    if not database_helper.user_logged(email):
-        token = binascii.b2a_hex(os.urandom(15))
-        logged = json.loads(database_helper.add_logged_user(token=token, email=email))
-        if logged['success']:
-            return json.dumps({'success': True, 'message': 'User is logged', 'data': token})
-        else:
-            return json.dumps({'success': False, 'message': logged['message'], 'data': ''})
+    if database_helper.user_logged(email):
+        database_helper.unlog_email(email)
+        http_server
+        # send message to client.js to remove token
+
+    token = binascii.b2a_hex(os.urandom(15))
+    logged = json.loads(database_helper.add_logged_user(token=token, email=email))
+    if logged['success']:
+        return json.dumps({'success': True, 'message': 'User is logged', 'data': token})
     else:
-        return json.dumps({'success': True, 'message': 'User already connected', 'data': ''})
+        return json.dumps({'success': False, 'message': logged['message'], 'data': ''})
+
 
 
 # Signs out a user from the system
@@ -174,6 +195,7 @@ def post_message():
     message = request.json['message']
     email = request.json['email']
 
+
     logged = database_helper.user_logged_by_token(token=token)
     if logged:
         # user logged
@@ -188,6 +210,7 @@ def post_message():
             return database_helper.post_message(token=token, message=message, email=email)
     else:
         return json.dumps({'success': False, 'message': 'User not logged'})
+
 
 
 

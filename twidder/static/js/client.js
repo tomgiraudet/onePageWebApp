@@ -17,24 +17,42 @@ function randomimage() {
 
 var SCRIPT_ROOT = 'http://127.0.0.1:5000/';
 
+var socket_connection;
+
 window.onload = function() {
 
-    if (localStorage.getItem("loggedinusers") == "{}" || localStorage.getItem("loggedinusers") === null) {
+    if (localStorage.getItem("token") == "{}" || localStorage.getItem("token") === null) {
         displayWelcomeView();
     }else{
-        displayProfileView();
+        token = localStorage.getItem("token");
+        displayProfileView(token);
     }
+
 
 };
 
 function displayWelcomeView(){
+    socket_connection = new WebSocket("ws://127.0.0.1:5000/connect_socket");
+    socket_connection.onopen = function()
+    {
+        // Web Socket is connected, send data using send()
+        socket_connection.send('connection ok');
+        console.log("Message sent");
+    };
+
+    socket_connection.onmessage = function(event){
+        console.log('Response socket : ' + event.data)
+    };
+
+
     var request = new XMLHttpRequest();
     var res_request;
 
     var welcomeDiv = document.getElementById("welcome-display");
     welcomeDiv.innerHTML = document.getElementById('welcome-view').innerHTML ;
-    btnLogin = document.getElementById("btn-login");
 
+    //LOGIN
+    btnLogin = document.getElementById("btn-login");
     btnLogin.setAttribute("onclick", "return false;");  // make the page not refresh
     btnLogin.addEventListener("click", function() {
         var username = document.getElementById("user-username").value;
@@ -63,6 +81,8 @@ function displayWelcomeView(){
                             document.getElementById("error-area-signin").removeChild(document.getElementById("login-error"));
                         }
                         token = res_request.data;
+                        localStorage.setItem('token', token);
+
                         changeWelcomeToProfile(token);
 
                     } else {
@@ -80,8 +100,8 @@ function displayWelcomeView(){
     });
 
 
+    //SIGN UP
     btnsignup = document.getElementById("btn-signup");
-
     btnsignup.setAttribute("onclick", "return false;");
     btnsignup.addEventListener("click", function() {
         var username = document.getElementById("new-username").value;
@@ -128,6 +148,7 @@ function displayWelcomeView(){
                     if(connection.success){
                         token = connection.data;
                         document.getElementById("signup-form").reset();
+                        localStorage.setItem('token', token);
                         changeWelcomeToProfile(token);
 
                     }else{
@@ -150,6 +171,7 @@ function displayWelcomeView(){
     img.setAttribute("src", "static/public/img/" + randomimage());
     document.getElementById('ad').appendChild(img);
 }
+
 
 function displayProfileView(token){
 
@@ -239,6 +261,7 @@ function displayProfileView(token){
             if (loggout_request.readyState == 4 && loggout_request.status == 200) {
                 res_request = JSON.parse(loggout_request.responseText);
                 if (res_request.success){
+                    localStorage.removeItem('token');
                     changeProfileToWelcome();
                 }
             }

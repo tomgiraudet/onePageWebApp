@@ -54,6 +54,16 @@ def user_logged(email):
         return False
 
 
+# Unlog user with email
+def unlog_email(email):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("DELETE from loggedUser WHERE email='" + email + "'")
+    db.commit()
+    close_db()
+    return True
+
+
 # Check if the user is already logged with token id
 def user_logged_by_token(token):
     db = get_db()

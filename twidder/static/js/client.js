@@ -17,7 +17,7 @@ function randomimage() {
 
 var SCRIPT_ROOT = 'http://127.0.0.1:5000/';
 
-var socket_connection;
+var socket;
 
 window.onload = function() {
 
@@ -27,26 +27,40 @@ window.onload = function() {
         token = localStorage.getItem("token");
         displayProfileView(token);
     }
-
-
 };
 
-function displayWelcomeView(){
-    socket_connection = new WebSocket("ws://127.0.0.1:5000/connect_socket");
-    socket_connection.onopen = function()
+
+function socket_connection(email, token){
+    socket = new WebSocket("ws://" + document.domain + ":5000/connect_socket");
+
+    socket.onopen = function()
     {
+        console.log("onopen : connection ok");
         // Web Socket is connected, send data using send()
-        socket_connection.send('connection ok');
+        logged_id = JSON.stringify({email: email});
+
+        socket.send(logged_id);
         console.log("Message sent");
     };
 
-    socket_connection.onmessage = function(event){
-        console.log('Response socket : ' + event.data)
+    socket.onmessage = function(event){
+        msg = JSON.parse(event.data);
+        if (msg.success == false) {
+            // Connection on another device, you're logged out
+            log_out(token);
+        }
     };
 
+    socket.onbeforeunload = function() {
+        ws.close();
+    };
+}
 
+
+function displayWelcomeView(){
     var request = new XMLHttpRequest();
     var res_request;
+
 
     var welcomeDiv = document.getElementById("welcome-display");
     welcomeDiv.innerHTML = document.getElementById('welcome-view').innerHTML ;
@@ -84,6 +98,7 @@ function displayWelcomeView(){
                         localStorage.setItem('token', token);
 
                         changeWelcomeToProfile(token);
+                        socket_connection(username, token);
 
                     } else {
                         // error
@@ -251,21 +266,7 @@ function displayProfileView(token){
     var loggoutbtn = document.getElementById("loggout-btn");
     loggoutbtn.setAttribute("onclick", "return false;");  // make the page not refresh
     loggoutbtn.addEventListener("click", function(){
-
-        // Sending get request to get user information
-        loggout_request = new XMLHttpRequest();
-        loggout_request.open('GET', SCRIPT_ROOT + 'sign_out?token=' + token, true);
-        loggout_request.send();
-
-        loggout_request.onreadystatechange = function () {
-            if (loggout_request.readyState == 4 && loggout_request.status == 200) {
-                res_request = JSON.parse(loggout_request.responseText);
-                if (res_request.success){
-                    localStorage.removeItem('token');
-                    changeProfileToWelcome();
-                }
-            }
-        };
+        log_out(token);
     });
 
 
@@ -422,7 +423,6 @@ function displayProfileView(token){
                 }
             }
         };
-
         return false;
 
     });
@@ -587,4 +587,22 @@ function eraseErrorShare(){
     if(document.getElementById("share-error") != null){
         document.getElementById("share-error").innerHTML = "";
     }
+}
+
+
+function log_out(token){
+    // Sending get request to get user information
+    loggout_request = new XMLHttpRequest();
+    loggout_request.open('GET', SCRIPT_ROOT + 'sign_out?token=' + token, true);
+    loggout_request.send();
+
+    loggout_request.onreadystatechange = function () {
+        if (loggout_request.readyState == 4 && loggout_request.status == 200) {
+            res_request = JSON.parse(loggout_request.responseText);
+            if (res_request.success){
+                localStorage.removeItem('token');
+                changeProfileToWelcome();
+            }
+        }
+    };
 }

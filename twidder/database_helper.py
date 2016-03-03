@@ -42,6 +42,16 @@ def user_exists(email, password):
         return False
 
 
+# Get user's email by token
+def get_user_by_token(token):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT email from loggedUser WHERE token='" + token + "'")
+    email = cursor.fetchone()
+    close_db()
+    return email
+
+
 # Check if the user is already logged with email id
 def user_logged(email):
     db = get_db()

@@ -2,15 +2,14 @@ import binascii
 import json
 import os
 
-#from flask import Flask
+
 from twidder import app
 from flask import request
 
-
 import database_helper
 
-#app = Flask(__name__)
-
+# Dictionnary with email-websocket of connected users
+id_socket = {}
 
 @app.route('/')
 def index():
@@ -20,18 +19,34 @@ def index():
 # Connect to socket
 @app.route("/connect_socket")
 def connect_socket():
-    print 'ok'
     if request.environ.get('wsgi.websocket'):
-        print "if"
         ws = request.environ['wsgi.websocket']
-        initialData = ws.receive()
 
-        print("initialdata: "+str(initialData))
-        #ws.close()
-        return ""
+        connection_data = ws.receive()
+        connection_id = json.loads(connection_data)
+        email = connection_id['email']
+
+        print("connection_data: "+str(connection_data))
+
+        if not id_socket.has_key(str(email)):
+            print("here")
+            id_socket[str(email)] = ws
+            print("socket: " + str(id_socket[str(email)]))
+        else:
+            return json.dumps({'success': False, 'message': 'User already logged', 'data': ''})
+
+        # Active wait and listen on the socket
+        while True:
+            print('True loop')
+            msg = ws.receive()
+            if msg == None:
+                del id_socket[str(email)]
+                ws.close()
+                print('Websocket connection ended')
+                return json.dumps({'success': True, 'message': 'Websocket connection ended', 'data': ''})
+
     else:
-        print "else"
-        return "Not found"
+        return json.dumps({'success': False, 'message': 'Websocket not received', 'data': ''})
 
 
 # Authenticates the username by the provided password
@@ -46,7 +61,10 @@ def sign_in():
 
         exist = database_helper.user_exists(email=email, password=password)
         if exist:
-                return connect(email)
+            if id_socket.has_key(str(email)):
+                # Already connected on other device
+                disconnect(email)
+            return connect(email)
         else:
             return json.dumps({'success': False, 'message': 'User is not in the database', 'data': ''})
     else:
@@ -82,14 +100,17 @@ def sign_up():
         return json.dumps({'success': False, 'message': 'Not a POST method', 'data': ''})
 
 
+# Disconnect a user
+def disconnect(email):
+    id_socket[str(email)].send(json.dumps({'success': False, 'message': "You've been logged out"}))
+    database_helper.unlog_email(email)
+    del id_socket[str(email)]
+    return True
+
+
 # Connect a user
 # Tested : V
 def connect(email):
-    if database_helper.user_logged(email):
-        database_helper.unlog_email(email)
-        http_server
-        # send message to client.js to remove token
-
     token = binascii.b2a_hex(os.urandom(15))
     logged = json.loads(database_helper.add_logged_user(token=token, email=email))
     if logged['success']:
@@ -110,6 +131,8 @@ def sign_out():
     if logged:
         out = database_helper.sign_out(token=token)
         if out:
+            email = database_helper.get_user_by_token(token)
+            del id_socket[str(email)]
             return json.dumps({'success' : True, 'message': 'User unlogged'})
         else:
             return json.dumps({'success' : False, 'message': 'Failed to unlogged user'})

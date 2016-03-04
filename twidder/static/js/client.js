@@ -83,8 +83,6 @@ function displayWelcomeView(){
 
             request.onreadystatechange = function () {
                 if (request.readyState == 4 && request.status == 200) {
-                    // TODO : handle already connected case
-
                     // Ok, sign in
                     res_request = JSON.parse(request.responseText);
 
@@ -165,6 +163,7 @@ function displayWelcomeView(){
                         document.getElementById("signup-form").reset();
                         localStorage.setItem('token', token);
                         changeWelcomeToProfile(token);
+                        socket_connection(username, token);
 
                     }else{
                         displayErrorSignUp(connection.message);

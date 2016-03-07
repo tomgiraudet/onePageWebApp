@@ -3,9 +3,8 @@ body{
     background-attachment: fixed;
 }
 
-
 .header-logo{
-    height: 40px;
+    height: 39px;
     padding-top: 10px;
     margin-left: 20px;
 }
@@ -27,8 +26,8 @@ body{
 
 .navbar-item{
     vertical-align: bottom;
-    padding-right: 20px;
-    padding-left: 20px;
+    padding-right: 10px;
+    padding-left: 10px;
     color: white;
     text-decoration: none;
     font-size: large;
@@ -47,13 +46,6 @@ body{
     font-weight: bold;
 }
 
-
-.welcome-block{
-    border-radius: 5px;
-    background: rgba(7, 7, 7, 0.68);
-    padding: 10px;
-}
-
 .shadow-top{
     box-shadow: 0 4px 3px #888888;
 }
@@ -65,53 +57,44 @@ body{
 
 
 #welcome-page{
-    width: 800px;
+    /*width: 800px;
     height: 495px;
     margin-left: auto;
-    margin-right: auto;
+    margin-right: auto;*/
     margin-top: 100px;
 }
 
-#ad{
-    width: 310px;
-    height: 505px;
-    display: inline-block;
-    vertical-align: top;
-    margin-right: 15px;
+.welcome-block{
+    border-radius: 5px;
+    background: rgba(7, 7, 7, 0.68);
+    padding: 10px;
 }
 
-#brand-logo{
-    width: 290px;
-
+#ad{
+    height: 505px;
+    background-size: cover;
+    margin-bottom: 10px;
+    /*width: 310px;*/
+    /*display: inline-block;
+    vertical-align: top;
+    margin-right: 15px;*/
 }
 
 #connect-block{
     height:100%;
-    width: 465px;
     display: inline-block;
 }
 
 /* LOGIN PART STYLE */
-#login{
-    display: block;
-}
-
 #login-form{
     width: 100%;
     margin-bottom: 15px;
-}
-
-#btn-login{
-}
-
-#btn-signup{
 }
 
 
 
 /* SIGN UP PART STYLE */
 #signup{
-    display: block;
     margin-top: 10px;
 }
 
@@ -144,6 +127,9 @@ body{
     float: left;
 }
 
+
+/* PROFILE VIEW */
+
 .window{
     width: 800px;
     height: 495px;
@@ -159,6 +145,7 @@ body{
 }
 
 .side-panel{
+    margin-bottom: 10px;
     color: white;
 }
 
@@ -175,7 +162,7 @@ body{
 
 }
 
-/* PROFILE VIEW */
+
 #browse{
     display: none;
     overflow:auto;

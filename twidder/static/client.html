@@ -22,84 +22,92 @@
         <img class="header-logo" src="static/public/img/header.png"/>
     </nav>
 
-    <div id="welcome-page">
-        <div id="ad" class="welcome-block shadow">
-        </div>
-        <div id="connect-block">
-            <div id="login" class="welcome-block shadow">
-                <div class="title-sign"> Sign in ...</div>
-                <form role="form">
-                    <div id="login-form" class="form-inline">
-                        <div class="input-group" id="in-username-form">
+
+    <div id="welcome-page" class="row">
+        <div class="col-md-8 col-md-offset-2">
+
+            <div class="row">
+                <div id="ad" class="welcome-block shadow col-sm-5 col-xs-6 col-xs-offset-3 col-sm-offset-0">
+                </div>
+
+                <div id="connect-block" class="col-sm-7">
+                    <div id="login" class="welcome-block shadow">
+                        <div class="title-sign"> Sign in ...</div>
+                        <form role="form">
+                            <div id="login-form" class="form-inline">
+                                <div class="input-group" id="in-username-form">
                       <span class="input-group-addon">
                           <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
                       </span>
-                            <input type="email" class="form-control" name="user-username" id="user-username" placeholder="Username" aria-describedby="basic-addon1">
-                        </div>
-                        <div class="input-group" id="in-password-form">
+                                    <input type="email" class="form-control" name="user-username" id="user-username" placeholder="Username" aria-describedby="basic-addon1">
+                                </div>
+                                <div class="input-group" id="in-password-form">
                       <span class="input-group-addon">
                           <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>
                       </span>
-                            <input type="password" class="form-control" name="user-password" id="user-password" placeholder="Password" aria-describedby="basic-addon1">
-                        </div>
-                    </div>
-                    <div><h4 id="error-area-signin"></h4></div>
-                    <div class="text-right">
-                        <button id="btn-login" type="submit" class="btn btn-default">Connect</button>
-                    </div>
-                </form>
-            </div>
-
-            <div id="signup" class="welcome-block shadow">
-                <div class="title-sign">... or sign up now ! </div>
-                <form role="form" id="signup-form">
-                    <div class="form-group">
-                        <div><h4 id="error-area-signup"></h4></div>
-                        <div class="form-group has-feedback">
-                            <div class="input-form" id="up-username-form">
-                                <input type="email" class="form-control" id="new-username" placeholder="Username">
+                                    <input type="password" class="form-control" name="user-password" id="user-password" placeholder="Password" aria-describedby="basic-addon1">
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-inline">
-                            <div class="input-form" id="up-password-form">
-                                <input type="password" class="form-control" id="new-password" placeholder="Password" aria-describedby="basic-addon1">
-                                <input type="password" class="form-control" id="new-passwordb" placeholder="Confirm password" aria-describedby="basic-addon1">
+                            <div><h4 id="error-area-signin"></h4></div>
+                            <div class="text-right">
+                                <button id="btn-login" type="submit" class="btn btn-default">Connect</button>
                             </div>
-                        </div>
+                        </form>
                     </div>
 
-                    <div class="form-group">
-                        <label class="forms-label-sign">Who are you ?</label>
-                        <div class="form-inline">
-                            <div class="input-form" id="up-name-form">
-                                <input type="text" class="form-control" id="new-firstname" placeholder="First name">
-                                <input type="text" class="form-control" id="new-familyname" placeholder="Family name">
-                            </div>
-                        </div>
-                        <div class="form-inline" id="sex-form">
-                            <div class="input-group" id="up-sex-form">
-                                <label id="sex-label" class="forms-label-sign"> Sex: </label>
+                    <div id="signup" class="welcome-block shadow">
+                        <div class="title-sign">... or sign up now ! </div>
+                        <form role="form" id="signup-form">
+                            <div class="form-group">
+                                <div><h4 id="error-area-signup"></h4></div>
+                                <div class="form-group has-feedback">
+                                    <div class="input-form" id="up-username-form">
+                                        <input type="email" class="form-control" id="new-username" placeholder="Username">
+                                    </div>
+                                </div>
+                                <div class="form-inline">
+                                    <div class="input-form" id="up-password-form">
+                                        <input type="password" class="form-control" id="new-password" placeholder="Password" aria-describedby="basic-addon1">
+                                        <input type="password" class="form-control" id="new-passwordb" placeholder="Confirm password" aria-describedby="basic-addon1">
+                                    </div>
+                                </div>
                             </div>
 
-                            <label class="radio-inline forms-label-sign active">
-                                <input type="radio" id="female-radio-btn" name="sex-radio-btn" value="female" checked> Female
-                            </label>
-                            <label class="radio-inline forms-label-sign">
-                                <input type="radio" id="male-radio-btn" name="sex-radio-btn"  value="male"> Male
-                            </label>
+                            <div class="form-group">
+                                <label class="forms-label-sign">Who are you ?</label>
+                                <div class="form-inline">
+                                    <div class="input-form" id="up-name-form">
+                                        <input type="text" class="form-control" id="new-firstname" placeholder="First name">
+                                        <input type="text" class="form-control" id="new-familyname" placeholder="Family name">
+                                    </div>
+                                </div>
+                                <div class="form-inline" id="sex-form">
+                                    <div class="input-group" id="up-sex-form">
+                                        <label id="sex-label" class="forms-label-sign"> Sex: </label>
+                                    </div>
 
-                        </div>
-                        <div class="form-inline">
-                            <div class="input-form" id="up-address-form">
-                                <input type="text" class="form-control" id="city" placeholder="City">
-                                <input type="text" class="form-control" id="country" placeholder="Country">
+                                    <label class="radio-inline forms-label-sign active">
+                                        <input type="radio" id="female-radio-btn" name="sex-radio-btn" value="female" checked> Female
+                                    </label>
+                                    <label class="radio-inline forms-label-sign">
+                                        <input type="radio" id="male-radio-btn" name="sex-radio-btn"  value="male"> Male
+                                    </label>
+
+                                </div>
+                                <div class="form-inline">
+                                    <div class="input-form" id="up-address-form">
+                                        <input type="text" class="form-control" id="city" placeholder="City">
+                                        <input type="text" class="form-control" id="country" placeholder="Country">
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                            <div class="text-right">
+                                <button type="submit" id="btn-signup" class="btn btn-default">Create my account</button>
+                            </div>
+                        </form>
                     </div>
-                    <div class="text-right">
-                        <button type="submit" id="btn-signup" class="btn btn-default">Create my account</button>
-                    </div>
-                </form>
+                </div>
+
             </div>
         </div>
     </div>
@@ -109,7 +117,7 @@
 <div id="profile-display"></div>
 
 <script id="profile-view"  type="text/html">
-    <div id="profile-page" >
+    <div id="profile-page" class="row" >
         <div id="profile-navbar" class="shadow-top header">
             <img class="header-logo" src="static/public/img/header.png"/>
             <div class="navbar-menu">
@@ -121,7 +129,7 @@
         </div>
 
         <div id="page" class="row">
-            <div id="side-panel" class="side-panel shadow welcome-block col-md-2 col-md-offset-1">
+            <div id="side-panel" class="side-panel shadow welcome-block col-sm-2 col-sm-offset-1">
                 <div class="title-sign">Profile</div>
                 <div class="container">
                     <dl>
@@ -145,7 +153,7 @@
                     </dl>
                 </div>
             </div>
-            <div id="general-panel" class=" col-md-8">
+            <div id="general-panel" class=" col-sm-8">
                 <div id="home">
                     <div class="shadow welcome-block">
                         <div class="title-sign">Home</div>

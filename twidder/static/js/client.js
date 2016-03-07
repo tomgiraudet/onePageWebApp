@@ -180,10 +180,7 @@ function displayWelcomeView(){
     });
 
     // Display random image
-    var img = document.createElement("IMG");
-    img.setAttribute("id", "brand-logo");
-    img.setAttribute("src", "static/public/img/" + randomimage());
-    document.getElementById('ad').appendChild(img);
+    $('#ad').css('background-image', 'url(static/public/img/' + randomimage() +')');
 }
 
 

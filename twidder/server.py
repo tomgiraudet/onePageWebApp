@@ -29,7 +29,6 @@ def connect_socket():
         print("connection_data: "+str(connection_data))
 
         if not id_socket.has_key(str(email)):
-            print("here")
             id_socket[str(email)] = ws
             print("socket: " + str(id_socket[str(email)]))
         else:
@@ -37,9 +36,10 @@ def connect_socket():
 
         # Active wait and listen on the socket
         while True:
-            print('True loop')
+            print("Waiting")
             msg = ws.receive()
             if msg == None:
+                print('id_socket closing : ' + id_socket[str(email)])
                 del id_socket[str(email)]
                 ws.close()
                 print('Websocket connection ended')
@@ -120,19 +120,24 @@ def connect(email):
 
 
 
+
 # Signs out a user from the system
 # Tested : V
 @app.route('/sign_out', methods=['GET'])
 def sign_out():
+    print('Sign out')
     token = request.args.get('token', '')
 
     logged = database_helper.user_logged_by_token(token=token)
 
     if logged:
+        print("Good if")
+        email = database_helper.get_user_by_token(token)
+        print("Email : " + str(email))
+        del id_socket[str(email)]
         out = database_helper.sign_out(token=token)
         if out:
-            email = database_helper.get_user_by_token(token)
-            del id_socket[str(email)]
+            # PROBLEM WITH THE EMAIL
             return json.dumps({'success' : True, 'message': 'User unlogged'})
         else:
             return json.dumps({'success' : False, 'message': 'Failed to unlogged user'})

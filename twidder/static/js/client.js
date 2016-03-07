@@ -251,8 +251,6 @@ function displayProfileView(token){
                     }
                 }
             };
-
-
         }else{
             displayErrorChangePassword("Complete the fields");
         }
@@ -534,6 +532,8 @@ function displayMessageHomePage(msg){
             var msg = template.clone().removeClass("hidden");
             div = document.createElement("div");
             div.setAttribute("class", "panel-body content-message");
+            div.setAttribute("draggable", "true");
+            div.setAttribute("ondragstart", "drag(event)");
             div.innerHTML = message.content;
             msg.append(div);
             $("#newsfeed").append(msg);
@@ -601,4 +601,20 @@ function log_out(token){
             }
         }
     };
+}
+
+/* Drag and drop */
+
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+function drag(ev) {
+    ev.dataTransfer.setData("text", ev.target.innerHTML);
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("text");
+    ev.target.value = data;
 }

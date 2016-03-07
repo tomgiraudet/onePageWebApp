@@ -49,7 +49,7 @@ def get_user_by_token(token):
     cursor.execute("SELECT email from loggedUser WHERE token='" + token + "'")
     email = cursor.fetchone()
     close_db()
-    return email
+    return email[0]
 
 
 # Check if the user is already logged with email id

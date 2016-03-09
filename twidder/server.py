@@ -131,9 +131,7 @@ def sign_out():
     logged = database_helper.user_logged_by_token(token=token)
 
     if logged:
-        print("Good if")
         email = database_helper.get_user_by_token(token)
-        print("Email : " + str(email))
         del id_socket[str(email)]
         out = database_helper.sign_out(token=token)
         if out:

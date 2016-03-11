@@ -100,7 +100,7 @@ def add_logged_user(token, email):
 def insert_user(email, password, firstname, familyname, gender, city, country):
     db = get_db()
     try:
-        db.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?)", (email, password, firstname, familyname, gender, city, country))
+        db.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (email, password, firstname, familyname, gender, city, country, 0))
         db.commit()
         close_db()
     except sqlite3.OperationalError, msg:
@@ -153,6 +153,8 @@ def get_user_data_by_email(email):
     cursor = db.cursor()
     cursor.execute("SELECT * from users WHERE email='" + email + "'")
     user_data = cursor.fetchone()
+    cursor.execute("UPDATE users SET views = views+1 WHERE email='" + email + "' ")
+    db.commit()
     close_db()
     return json.dumps({'success': True, 'message': 'Data transfered', 'data': {'email': user_data[0], 'firstname': user_data[2], 'familyname': user_data[3], 'gender': user_data[4], 'city': user_data[5], 'country': user_data[6]}})
 
@@ -228,3 +230,12 @@ def get_number_connected_users():
 
     result = float((number/total) * 100)
     return json.dumps({'success': True, 'message': 'Number of users found', 'data': result})
+
+
+# Getting number of views on one user's wall
+def get_number_views(email):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT views from users WHERE email='" + email + "'")
+    number = cursor.fetchone()[0]
+    return json.dumps({'success': True, 'message': 'Number of message found', 'data': number})

@@ -624,6 +624,10 @@ function drop(ev) {
 function live_data_connection(email){
     var live_socket = new WebSocket("ws://" + document.domain + ":5000/live_data_socket");
 
+    // Declaration of the charts
+    var viewschart;
+    var connectedchart;
+
     live_socket.onopen = function(e)
     {
         console.log(e);
@@ -641,58 +645,68 @@ function live_data_connection(email){
         msg = JSON.parse(event.data);
         if (msg.success == true) {
             // Data received
-            live_data = msg.data;
-            console.log(live_data);
 
-            messages = ['messages', live_data.messages];
-            users = ['users', live_data.users];
-            console.log(messages);
-            console.log(users);
+            if(msg.updating == true ){
+                notification = JSON.stringify({update: true});
+                live_socket.send(notification);
+            } else {
+                if (msg.update == false) {
+                // CREATION
 
-            // TEST CHARTS
-            var viewschart = c3.generate({
-                bindto: '#viewsChart',
-                data: {
-                    columns: [
-                        ['views', 30],
-                        messages
-                    ],
-                    names: {
-                        views: 'Views',
-                        messages: 'Messages'
+                live_data = msg.data;
+                console.log(live_data);
+
+                messages = ['messages', live_data.messages];
+                users = ['users', live_data.users];
+                views = ['views', live_data.views];
+                console.log(messages);
+                console.log(users);
+                console.log(views);
+
+                // TEST CHARTS
+                viewschart = c3.generate({
+                    bindto: '#viewsChart',
+                    data: {
+                        columns: [
+                            views,
+                            messages
+                        ],
+                        names: {
+                            views: 'Views',
+                            messages: 'Messages'
+                        },
+                        type: 'bar'
                     },
-                    type: 'bar'
-                },
-                bar: {
-                    width: {
-                        ratio: 0.5 // this makes bar width 50% of length between ticks
-                    }
-                    // or
-                    //width: 100 // this makes bar width 100px
-                },
-                axis: {
-                    x: {
-                        tick: {
-                            format: function (d) {
-                                return "Today";
+                    bar: {
+                        width: {
+                            ratio: 0.5 // this makes bar width 50% of length between ticks
+                        }
+                        // or
+                        //width: 100 // this makes bar width 100px
+                    },
+                    axis: {
+                        x: {
+                            tick: {
+                                format: function (d) {
+                                    return "Today";
+                                }
                             }
                         }
                     }
-                }
-            });
+                });
 
-            var connectedchart = c3.generate({
-                bindto: '#connectedChart',
-                data: {
-                    columns: [
-                        users
-                    ],
-                    names: {
-                        users: 'Connected users'
+                connectedchart = c3.generate({
+                    bindto: '#connectedChart',
+                    data: {
+                        columns: [
+                            users
+                        ],
+                        names: {
+                            users: 'Connected users'
+                        },
+                        type: 'gauge'
                     },
-                    type: 'gauge'
-                },
-                gauge: {
+                    gauge: {
 //        label: {
 //            format: function(value, ratio) {
 //                return value;
@@ -703,29 +717,55 @@ function live_data_connection(email){
 //        max: 100, // 100 is default
 //        units: ' %',
 //        width: 39 // for adjusting arc thickness
-                },
-                color: {
-                    pattern: ['#FF0000', '#F97600', '#F6C600', '#60B044'], // the three color levels for the percentage values.
-                    threshold: {
+                    },
+                    color: {
+                        pattern: ['#FF0000', '#F97600', '#F6C600', '#60B044'], // the three color levels for the percentage values.
+                        threshold: {
 //            unit: 'value', // percentage is default
 //            max: 200, // 100 is default
-                        values: [30, 60, 90, 100]
-                    }
-                },
-                size: {
-                    height: 180
-                },
-                axis: {
-                    y: {
-                        tick: {
-                            format: function (d) {
-                                return d + "%";
+                            values: [30, 60, 90, 100]
+                        }
+                    },
+                    size: {
+                        height: 180
+                    },
+                    axis: {
+                        y: {
+                            tick: {
+                                format: function (d) {
+                                    return d + "%";
+                                }
                             }
                         }
                     }
-                }
-            });
+                });
 
+            } else {
+                // UPDATE
+                live_data = msg.data;
+                console.log("UPDATE");
+                console.log(live_data);
+
+                messages = ['messages', live_data.messages];
+                users = ['users', live_data.users];
+                views = ['views', live_data.views];
+
+                viewschart.load({
+                    columns: [
+                        views,
+                        messages
+                    ]
+                });
+
+                connectedchart.load({
+                    columns: [
+                        users
+                    ]
+                });
+            }
+
+
+            }
         }
     };
 

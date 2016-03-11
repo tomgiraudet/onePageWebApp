@@ -5,11 +5,13 @@ import os
 
 from twidder import app
 from flask import request
+from time import sleep
 
 import database_helper
 
 # Dictionnary with email-websocket of connected users
 id_socket = {}
+update_socket = {}
 
 @app.route('/')
 def index():
@@ -62,6 +64,9 @@ def live_data_socket():
         connection_id = json.loads(connection_data)
         email = connection_id['email']
 
+        if not update_socket.has_key(str(email)):
+            update_socket[str(email)] = ws
+
         print("[LiveData] connection_data: "+str(connection_data))
 
         liveData = {}
@@ -70,26 +75,54 @@ def live_data_socket():
         messages = messages['data']
         liveData['messages'] = messages
 
+        views = json.loads(database_helper.get_number_views(email))
+        views = views['data']
+        liveData['views'] = views
+
         users = json.loads(database_helper.get_number_connected_users())
         users = users['data']
         liveData['users'] = users
 
         print("Sending data")
-        ws.send(json.dumps({'success': True, 'message': "Live data", 'data': liveData}))
+        ws.send(json.dumps({'success': True, 'message': "Live Data", 'update': False, 'data': liveData}))
 
         # Active wait and listen on the socket
         while True:
             print("[Live Data] Waiting")
+
             msg = ws.receive()
             if msg == None:
                 print('id_socket closing : ' + id_socket[str(email)])
-                del id_socket[str(email)]
+                del update_socket[str(email)]
                 ws.close()
-                print('Websocket connection ended')
+                print('Update websocket connection ended')
                 return json.dumps({'success': True, 'message': 'Websocket connection ended', 'data': ''})
+            else:
+                if json.loads(msg)['update'] == True:
+                    messages = json.loads(database_helper.get_number_post(email))
+                    messages = messages['data']
+                    liveData['messages'] = messages
+
+                    views = json.loads(database_helper.get_number_views(email))
+                    views = views['data']
+                    liveData['views'] = views
+
+                    users = json.loads(database_helper.get_number_connected_users())
+                    users = users['data']
+                    liveData['users'] = users
+
+                    print("Sending update data")
+                    ws.send(json.dumps({'success': True, 'message': "Updating data", 'update': True, 'data': liveData}))
+
 
     else:
         return json.dumps({'success': False, 'message': 'Websocket not received', 'data': ''})
+
+
+# Sending update notification to every connected users
+def send_notification():
+    for key, ws in update_socket.iteritems():
+        ws.send(json.dumps({'success': True, 'message': "Update data available", 'updating': True}))
 
 
 
@@ -158,6 +191,7 @@ def connect(email):
     token = binascii.b2a_hex(os.urandom(15))
     logged = json.loads(database_helper.add_logged_user(token=token, email=email))
     if logged['success']:
+        send_notification()
         return json.dumps({'success': True, 'message': 'User is logged', 'data': token})
     else:
         return json.dumps({'success': False, 'message': logged['message'], 'data': ''})
@@ -179,6 +213,7 @@ def sign_out():
         del id_socket[str(email)]
         out = database_helper.sign_out(token=token)
         if out:
+            send_notification()
             return json.dumps({'success' : True, 'message': 'User unlogged'})
         else:
             return json.dumps({'success' : False, 'message': 'Failed to unlogged user'})
@@ -224,6 +259,7 @@ def get_user_data_by_email():
 
     logged = database_helper.user_logged_by_token(token=token)
     if logged:
+        send_notification()
         return database_helper.get_user_data_by_email(email=email)
     else:
         return json.dumps({'success': False, 'message': 'User not logged', 'data': []})
@@ -272,6 +308,7 @@ def post_message():
             exists = database_helper.user_in_database(email=email)
             if exists:
                 # target user exists
+                send_notification()
                 return database_helper.post_message(token=token, message=message, email=email)
             else:
                 return json.dumps({'success': False, 'message': 'User not in the database'})

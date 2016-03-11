@@ -57,10 +57,6 @@ body{
 
 
 #welcome-page{
-    /*width: 800px;
-    height: 495px;
-    margin-left: auto;
-    margin-right: auto;*/
     margin-top: 100px;
 }
 
@@ -74,10 +70,6 @@ body{
     height: 505px;
     background-size: cover;
     margin-bottom: 10px;
-    /*width: 310px;*/
-    /*display: inline-block;
-    vertical-align: top;
-    margin-right: 15px;*/
 }
 
 #connect-block{
@@ -155,8 +147,15 @@ body{
 
 #btn-refresh{
     float: right;
-
 }
+
+#charts-div{
+    margin-top: 10px;
+    background: rgba(245, 245, 245, 0.45);
+    box-shadow: 4px 4px 3px #c3c3c3;
+}
+
+
 
 #general-panel{
 

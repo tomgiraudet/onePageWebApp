@@ -203,3 +203,28 @@ def post_message(token, message, email):
         db.execute("INSERT INTO messages (fromEmail, toEmail, content) VALUES (?, ?, ?)", (fromEmail, email, message))
     db.commit()
     return json.dumps({'success': True, 'message': 'Message posted'})
+
+
+# GET LIVE DATA
+
+# Getting number of post on one user's wall
+def get_number_post(email):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT COUNT(id) from messages WHERE toEmail='" + email + "'")
+    number = cursor.fetchone()[0]
+    return json.dumps({'success': True, 'message': 'Number of message found', 'data': number})
+
+
+# Getting number of connected person
+def get_number_connected_users():
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT COUNT(email) from users")
+    total = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(email) from loggedUser")
+    number = cursor.fetchone()[0]
+
+    result = float((number/total) * 100)
+    return json.dumps({'success': True, 'message': 'Number of users found', 'data': result})

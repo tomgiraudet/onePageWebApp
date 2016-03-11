@@ -49,6 +49,50 @@ def connect_socket():
         return json.dumps({'success': False, 'message': 'Websocket not received', 'data': ''})
 
 
+# Socket for the live data
+@app.route("/live_data_socket")
+def live_data_socket():
+    if request.environ.get('wsgi.websocket'):
+        print("[Live Data] Very beginning")
+        ws = request.environ['wsgi.websocket']
+
+        connection_data = ws.receive()
+        print("Message received")
+
+        connection_id = json.loads(connection_data)
+        email = connection_id['email']
+
+        print("[LiveData] connection_data: "+str(connection_data))
+
+        liveData = {}
+
+        messages = json.loads(database_helper.get_number_post(email))
+        messages = messages['data']
+        liveData['messages'] = messages
+
+        users = json.loads(database_helper.get_number_connected_users())
+        users = users['data']
+        liveData['users'] = users
+
+        print("Sending data")
+        ws.send(json.dumps({'success': True, 'message': "Live data", 'data': liveData}))
+
+        # Active wait and listen on the socket
+        while True:
+            print("[Live Data] Waiting")
+            msg = ws.receive()
+            if msg == None:
+                print('id_socket closing : ' + id_socket[str(email)])
+                del id_socket[str(email)]
+                ws.close()
+                print('Websocket connection ended')
+                return json.dumps({'success': True, 'message': 'Websocket connection ended', 'data': ''})
+
+    else:
+        return json.dumps({'success': False, 'message': 'Websocket not received', 'data': ''})
+
+
+
 # Authenticates the username by the provided password
 # Tested : V
 @app.route('/sign_in', methods=['POST'])
@@ -135,7 +179,6 @@ def sign_out():
         del id_socket[str(email)]
         out = database_helper.sign_out(token=token)
         if out:
-            # PROBLEM WITH THE EMAIL
             return json.dumps({'success' : True, 'message': 'User unlogged'})
         else:
             return json.dumps({'success' : False, 'message': 'Failed to unlogged user'})

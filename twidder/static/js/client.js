@@ -95,7 +95,7 @@ function displayWelcomeView(){
                         token = res_request.data;
                         localStorage.setItem('token', token);
 
-                        changeWelcomeToProfile(token);
+                        changeWelcomeToProfile(token, username);
                         socket_connection(username, token);
 
                     } else {
@@ -162,7 +162,7 @@ function displayWelcomeView(){
                         token = connection.data;
                         document.getElementById("signup-form").reset();
                         localStorage.setItem('token', token);
-                        changeWelcomeToProfile(token);
+                        changeWelcomeToProfile(token, username);
                         socket_connection(username, token);
 
                     }else{
@@ -184,7 +184,7 @@ function displayWelcomeView(){
 }
 
 
-function displayProfileView(token){
+function displayProfileView(token, username){
 
     // Logged
     var profileDiv = document.getElementById("profile-display");
@@ -368,7 +368,6 @@ function displayProfileView(token){
             res_request = JSON.parse(profile_request.responseText);
             userinformation = res_request.data;
 
-
             mailAddressUser = userinformation.email;
             firstNameUser = userinformation.firstname;
             familyNameUser = userinformation.familyname;
@@ -385,8 +384,6 @@ function displayProfileView(token){
 
         }
     };
-
-
 
     // SHARE BUTTON
     btnShare = document.getElementById("btn-share");
@@ -453,6 +450,8 @@ function displayProfileView(token){
         };
     });
 
+
+    live_data_connection(username);
 }
 
 function changeProfileToWelcome(){
@@ -461,10 +460,10 @@ function changeProfileToWelcome(){
     displayWelcomeView();
 }
 
-function changeWelcomeToProfile(token){
+function changeWelcomeToProfile(token, username){
     var welcomeDiv = document.getElementById("welcome-page");
     welcomeDiv.remove();
-    displayProfileView(token);
+    displayProfileView(token, username);
 }
 
 function displayErrorChangePassword(msg){
@@ -603,7 +602,7 @@ function log_out(token){
     };
 }
 
-/* Drag and drop */
+/* DRAG AND DROP */
 
 function allowDrop(ev) {
     ev.preventDefault();
@@ -617,4 +616,123 @@ function drop(ev) {
     ev.preventDefault();
     var data = ev.dataTransfer.getData("text");
     ev.target.value = data;
+}
+
+
+/* LIVE DATA */
+
+function live_data_connection(email){
+    var live_socket = new WebSocket("ws://" + document.domain + ":5000/live_data_socket");
+
+    live_socket.onopen = function(e)
+    {
+        console.log(e);
+        console.log("[Live Data] connection ok");
+        console.log(email);
+        // Web Socket is connected, send data using send()
+        email_socket = JSON.stringify({email: email});
+
+        live_socket.send(email_socket);
+        console.log("Message sent");
+    };
+
+    live_socket.onmessage = function(event){
+        console.log("[Live Data] Receiving message");
+        msg = JSON.parse(event.data);
+        if (msg.success == true) {
+            // Data received
+            live_data = msg.data;
+            console.log(live_data);
+
+            messages = ['messages', live_data.messages];
+            users = ['users', live_data.users];
+            console.log(messages);
+            console.log(users);
+
+            // TEST CHARTS
+            var viewschart = c3.generate({
+                bindto: '#viewsChart',
+                data: {
+                    columns: [
+                        ['views', 30],
+                        messages
+                    ],
+                    names: {
+                        views: 'Views',
+                        messages: 'Messages'
+                    },
+                    type: 'bar'
+                },
+                bar: {
+                    width: {
+                        ratio: 0.5 // this makes bar width 50% of length between ticks
+                    }
+                    // or
+                    //width: 100 // this makes bar width 100px
+                },
+                axis: {
+                    x: {
+                        tick: {
+                            format: function (d) {
+                                return "Today";
+                            }
+                        }
+                    }
+                }
+            });
+
+            var connectedchart = c3.generate({
+                bindto: '#connectedChart',
+                data: {
+                    columns: [
+                        users
+                    ],
+                    names: {
+                        users: 'Connected users'
+                    },
+                    type: 'gauge'
+                },
+                gauge: {
+//        label: {
+//            format: function(value, ratio) {
+//                return value;
+//            },
+//            show: false // to turn off the min/max labels.
+//        },
+//        min: 0, // 0 is default, //can handle negative min e.g. vacuum / voltage / current flow / rate of change
+//        max: 100, // 100 is default
+//        units: ' %',
+//        width: 39 // for adjusting arc thickness
+                },
+                color: {
+                    pattern: ['#FF0000', '#F97600', '#F6C600', '#60B044'], // the three color levels for the percentage values.
+                    threshold: {
+//            unit: 'value', // percentage is default
+//            max: 200, // 100 is default
+                        values: [30, 60, 90, 100]
+                    }
+                },
+                size: {
+                    height: 180
+                },
+                axis: {
+                    y: {
+                        tick: {
+                            format: function (d) {
+                                return d + "%";
+                            }
+                        }
+                    }
+                }
+            });
+
+        }
+    };
+
+    live_socket.onbeforeunload = function() {
+        ws.close();
+    };
+
+
+
 }

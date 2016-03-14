@@ -45,9 +45,128 @@ function socket_connection(email, token){
 
     socket.onmessage = function(event){
         msg = JSON.parse(event.data);
-        if (msg.success == false) {
+        if (msg.loggedOut && msg.success == false) {
             // Connection on another device, you're logged out
             log_out(token);
+        }
+
+        console.log("[Live Data] Receiving message");
+
+        if (msg.liveData && msg.success == true) {
+            // Data received
+
+            if (msg.update == false) {
+                // CREATION
+
+                live_data = msg.data;
+
+                messages = ['messages', live_data.messages];
+                users = ['users', live_data.users];
+                views = ['views', live_data.views];
+                console.log(messages);
+                console.log(users);
+                console.log(views);
+
+                // TEST CHARTS
+                viewschart = c3.generate({
+                    bindto: '#viewsChart',
+                    data: {
+                        columns: [
+                            views,
+                            messages
+                        ],
+                        names: {
+                            views: 'Views',
+                            messages: 'Messages'
+                        },
+                        type: 'bar'
+                    },
+                    bar: {
+                        width: {
+                            ratio: 0.5 // this makes bar width 50% of length between ticks
+                        }
+                        // or
+                        //width: 100 // this makes bar width 100px
+                    },
+                    axis: {
+                        x: {
+                            tick: {
+                                format: function (d) {
+                                    return "Today";
+                                }
+                            }
+                        }
+                    }
+                });
+
+                connectedchart = c3.generate({
+                    bindto: '#connectedChart',
+                    data: {
+                        columns: [
+                            users
+                        ],
+                        names: {
+                            users: 'Connected users'
+                        },
+                        type: 'gauge'
+                    },
+                    gauge: {
+//        label: {
+//            format: function(value, ratio) {
+//                return value;
+//            },
+//            show: false // to turn off the min/max labels.
+//        },
+//        min: 0, // 0 is default, //can handle negative min e.g. vacuum / voltage / current flow / rate of change
+//        max: 100, // 100 is default
+//        units: ' %',
+//        width: 39 // for adjusting arc thickness
+                    },
+                    color: {
+                        pattern: ['#FF0000', '#F97600', '#F6C600', '#60B044'], // the three color levels for the percentage values.
+                        threshold: {
+//            unit: 'value', // percentage is default
+//            max: 200, // 100 is default
+                            values: [30, 60, 90, 100]
+                        }
+                    },
+                    size: {
+                        height: 180
+                    },
+                    axis: {
+                        y: {
+                            tick: {
+                                format: function (d) {
+                                    return d + "%";
+                                }
+                            }
+                        }
+                    }
+                });
+
+            } else {
+                // UPDATE
+                live_data = msg.data;
+                console.log("UPDATE");
+                console.log(live_data);
+
+                messages = ['messages', live_data.messages];
+                users = ['users', live_data.users];
+                views = ['views', live_data.views];
+
+                viewschart.load({
+                    columns: [
+                        views,
+                        messages
+                    ]
+                });
+
+                connectedchart.load({
+                    columns: [
+                        users
+                    ]
+                });
+            }
         }
     };
 
@@ -451,7 +570,7 @@ function displayProfileView(token, username){
     });
 
 
-    live_data_connection(username);
+    //live_data_connection(username);
 }
 
 function changeProfileToWelcome(){
@@ -641,132 +760,7 @@ function live_data_connection(email){
     };
 
     live_socket.onmessage = function(event){
-        console.log("[Live Data] Receiving message");
-        msg = JSON.parse(event.data);
-        if (msg.success == true) {
-            // Data received
 
-            if(msg.updating == true ){
-                notification = JSON.stringify({update: true});
-                live_socket.send(notification);
-            } else {
-                if (msg.update == false) {
-                // CREATION
-
-                live_data = msg.data;
-                console.log(live_data);
-
-                messages = ['messages', live_data.messages];
-                users = ['users', live_data.users];
-                views = ['views', live_data.views];
-                console.log(messages);
-                console.log(users);
-                console.log(views);
-
-                // TEST CHARTS
-                viewschart = c3.generate({
-                    bindto: '#viewsChart',
-                    data: {
-                        columns: [
-                            views,
-                            messages
-                        ],
-                        names: {
-                            views: 'Views',
-                            messages: 'Messages'
-                        },
-                        type: 'bar'
-                    },
-                    bar: {
-                        width: {
-                            ratio: 0.5 // this makes bar width 50% of length between ticks
-                        }
-                        // or
-                        //width: 100 // this makes bar width 100px
-                    },
-                    axis: {
-                        x: {
-                            tick: {
-                                format: function (d) {
-                                    return "Today";
-                                }
-                            }
-                        }
-                    }
-                });
-
-                connectedchart = c3.generate({
-                    bindto: '#connectedChart',
-                    data: {
-                        columns: [
-                            users
-                        ],
-                        names: {
-                            users: 'Connected users'
-                        },
-                        type: 'gauge'
-                    },
-                    gauge: {
-//        label: {
-//            format: function(value, ratio) {
-//                return value;
-//            },
-//            show: false // to turn off the min/max labels.
-//        },
-//        min: 0, // 0 is default, //can handle negative min e.g. vacuum / voltage / current flow / rate of change
-//        max: 100, // 100 is default
-//        units: ' %',
-//        width: 39 // for adjusting arc thickness
-                    },
-                    color: {
-                        pattern: ['#FF0000', '#F97600', '#F6C600', '#60B044'], // the three color levels for the percentage values.
-                        threshold: {
-//            unit: 'value', // percentage is default
-//            max: 200, // 100 is default
-                            values: [30, 60, 90, 100]
-                        }
-                    },
-                    size: {
-                        height: 180
-                    },
-                    axis: {
-                        y: {
-                            tick: {
-                                format: function (d) {
-                                    return d + "%";
-                                }
-                            }
-                        }
-                    }
-                });
-
-            } else {
-                // UPDATE
-                live_data = msg.data;
-                console.log("UPDATE");
-                console.log(live_data);
-
-                messages = ['messages', live_data.messages];
-                users = ['users', live_data.users];
-                views = ['views', live_data.views];
-
-                viewschart.load({
-                    columns: [
-                        views,
-                        messages
-                    ]
-                });
-
-                connectedchart.load({
-                    columns: [
-                        users
-                    ]
-                });
-            }
-
-
-            }
-        }
     };
 
     live_socket.onbeforeunload = function() {

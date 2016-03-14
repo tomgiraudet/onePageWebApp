@@ -11,7 +11,6 @@ import database_helper
 
 # Dictionnary with email-websocket of connected users
 id_socket = {}
-update_socket = {}
 
 @app.route('/')
 def index():
@@ -32,43 +31,11 @@ def connect_socket():
 
         if not id_socket.has_key(str(email)):
             id_socket[str(email)] = ws
-            print("socket: " + str(id_socket[str(email)]))
         else:
             return json.dumps({'success': False, 'message': 'User already logged', 'data': ''})
 
-        # Active wait and listen on the socket
-        while True:
-            print("Waiting")
-            msg = ws.receive()
-            if msg == None:
-                print('id_socket closing : ' + id_socket[str(email)])
-                del id_socket[str(email)]
-                ws.close()
-                print('Websocket connection ended')
-                return json.dumps({'success': True, 'message': 'Websocket connection ended', 'data': ''})
 
-    else:
-        return json.dumps({'success': False, 'message': 'Websocket not received', 'data': ''})
-
-
-# Socket for the live data
-@app.route("/live_data_socket")
-def live_data_socket():
-    if request.environ.get('wsgi.websocket'):
-        print("[Live Data] Very beginning")
-        ws = request.environ['wsgi.websocket']
-
-        connection_data = ws.receive()
-        print("Message received")
-
-        connection_id = json.loads(connection_data)
-        email = connection_id['email']
-
-        if not update_socket.has_key(str(email)):
-            update_socket[str(email)] = ws
-
-        print("[LiveData] connection_data: "+str(connection_data))
-
+        # SENDING LIVE DATA
         liveData = {}
 
         messages = json.loads(database_helper.get_number_post(email))
@@ -85,36 +52,18 @@ def live_data_socket():
         liveData['users'] = users
 
         print("Sending data")
-        ws.send(json.dumps({'success': True, 'message': "Live Data", 'update': False, 'data': liveData}))
+        ws.send(json.dumps({'loggedOut': False, 'liveData': True, 'update': False, 'success': True, 'message': "Live Data", 'data': liveData}))
 
         # Active wait and listen on the socket
         while True:
-            print("[Live Data] Waiting")
-
+            print("Waiting")
             msg = ws.receive()
             if msg == None:
                 print('id_socket closing : ' + id_socket[str(email)])
-                del update_socket[str(email)]
+                del id_socket[str(email)]
                 ws.close()
-                print('Update websocket connection ended')
+                print('Websocket connection ended')
                 return json.dumps({'success': True, 'message': 'Websocket connection ended', 'data': ''})
-            else:
-                if json.loads(msg)['update'] == True:
-                    messages = json.loads(database_helper.get_number_post(email))
-                    messages = messages['data']
-                    liveData['messages'] = messages
-
-                    views = json.loads(database_helper.get_number_views(email))
-                    views = views['data']
-                    liveData['views'] = views
-
-                    users = json.loads(database_helper.get_number_connected_users())
-                    users = users['data']
-                    liveData['users'] = users
-
-                    print("Sending update data")
-                    ws.send(json.dumps({'success': True, 'message': "Updating data", 'update': True, 'data': liveData}))
-
 
     else:
         return json.dumps({'success': False, 'message': 'Websocket not received', 'data': ''})
@@ -122,9 +71,24 @@ def live_data_socket():
 
 # Sending update notification to every connected users
 def send_notification():
-    for key, ws in update_socket.iteritems():
-        ws.send(json.dumps({'success': True, 'message': "Update data available", 'updating': True}))
+    liveData = {}
 
+    print("Sending update data")
+
+    for email, ws in id_socket.iteritems():
+        messages = json.loads(database_helper.get_number_post(email))
+        messages = messages['data']
+        liveData['messages'] = messages
+
+        views = json.loads(database_helper.get_number_views(email))
+        views = views['data']
+        liveData['views'] = views
+
+        users = json.loads(database_helper.get_number_connected_users())
+        users = users['data']
+        liveData['users'] = users
+
+        ws.send(json.dumps({'loggedOut': False, 'liveData': True, 'update': True,'success': True, 'message': "Updating data", 'data': liveData}))
 
 
 # Authenticates the username by the provided password
@@ -167,7 +131,7 @@ def sign_up():
             return json.dumps({'success': False, 'message': 'User already exists', 'data': ''})
         else:
             result = json.loads(
-                database_helper.insert_user(email, password, firstname, familyname, gender, city, country))
+                    database_helper.insert_user(email, password, firstname, familyname, gender, city, country))
             # user added to the database
             if result['success']:
                 return connect(email)
@@ -180,7 +144,7 @@ def sign_up():
 
 # Disconnect a user
 def disconnect(email):
-    id_socket[str(email)].send(json.dumps({'success': False, 'message': "You've been logged out"}))
+    id_socket[str(email)].send(json.dumps({'loggedOut': True, 'liveData': False, 'success': False, 'message': "You've been logged out"}))
     database_helper.unlog_email(email)
     del id_socket[str(email)]
     return True
@@ -323,5 +287,5 @@ def post_message():
 
 
 
-#if __name__ == '__main__':
-#    app.run(debug=True)
+        #if __name__ == '__main__':
+        #    app.run(debug=True)

@@ -227,8 +227,7 @@ def get_number_connected_users():
 
     cursor.execute("SELECT COUNT(email) from loggedUser")
     number = cursor.fetchone()[0]
-
-    result = float((number/total) * 100)
+    result = float((number*100)/total)
     return json.dumps({'success': True, 'message': 'Number of users found', 'data': result})
 
 

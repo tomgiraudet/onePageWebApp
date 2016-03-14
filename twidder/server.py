@@ -81,6 +81,7 @@ def live_data_socket():
 
         users = json.loads(database_helper.get_number_connected_users())
         users = users['data']
+        print(users)
         liveData['users'] = users
 
         print("Sending data")
@@ -245,6 +246,7 @@ def get_user_data_by_token():
 
     logged = database_helper.user_logged_by_token(token=token)
     if logged:
+        send_notification()
         return database_helper.get_user_data_by_token(token=token)
     else:
         return json.dumps({'success': False, 'message': 'User not logged', 'data': []})
@@ -273,6 +275,7 @@ def get_user_messages_by_token():
 
     logged = database_helper.user_logged_by_token(token=token)
     if logged:
+        send_notification()
         return database_helper.get_user_messages_by_token(token=token)
     else:
         return json.dumps({'success': False, 'message': 'User not logged', 'data': []})

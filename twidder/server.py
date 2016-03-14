@@ -5,7 +5,6 @@ import os
 
 from twidder import app
 from flask import request
-from time import sleep
 
 import database_helper
 
@@ -210,8 +209,11 @@ def get_user_data_by_token():
 
     logged = database_helper.user_logged_by_token(token=token)
     if logged:
+        transfereddata = database_helper.get_user_data_by_token(token=token)
+        transfereddata = json.loads(transfereddata)
+        userdata = transfereddata['data']
         send_notification()
-        return database_helper.get_user_data_by_token(token=token)
+        return json.dumps({'success': True, 'message': 'Data transfered', 'data': userdata})
     else:
         return json.dumps({'success': False, 'message': 'User not logged', 'data': []})
 
@@ -225,8 +227,11 @@ def get_user_data_by_email():
 
     logged = database_helper.user_logged_by_token(token=token)
     if logged:
+        transfereddata = database_helper.get_user_data_by_email(email=email)
+        transfereddata = json.loads(transfereddata)
+        userdata = transfereddata['data']
         send_notification()
-        return database_helper.get_user_data_by_email(email=email)
+        return json.dumps({'success': True, 'message': 'Data transfered', 'data': userdata})
     else:
         return json.dumps({'success': False, 'message': 'User not logged', 'data': []})
 
@@ -239,8 +244,14 @@ def get_user_messages_by_token():
 
     logged = database_helper.user_logged_by_token(token=token)
     if logged:
-        send_notification()
-        return database_helper.get_user_messages_by_token(token=token)
+        transfereddata = database_helper.get_user_messages_by_token(token=token)
+        transfereddata = json.loads(transfereddata)
+        if transfereddata["success"]:
+            array_messages = transfereddata["data"]
+            send_notification()
+            return json.dumps({'success': True, 'message': 'Messages transfered', 'data': array_messages})
+        else:
+            return json.dumps({'success': False, 'message': 'No message found for this person', 'data': []})
     else:
         return json.dumps({'success': False, 'message': 'User not logged', 'data': []})
 
@@ -275,8 +286,9 @@ def post_message():
             exists = database_helper.user_in_database(email=email)
             if exists:
                 # target user exists
+                database_helper.post_message(token=token, message=message, email=email)
                 send_notification()
-                return database_helper.post_message(token=token, message=message, email=email)
+                return json.dumps({'success': True, 'message': 'Message posted'})
             else:
                 return json.dumps({'success': False, 'message': 'User not in the database'})
         else:
